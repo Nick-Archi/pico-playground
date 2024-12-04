@@ -16,11 +16,11 @@ I've used some microcontrollers back in college:
 
 ## Table of Contents
 
-1. [Background](#background)
-2. [Topics](#topics)
-3. [Methodology](#methodology)
-4. [References](#references)
-5. [Contact](#contact)
+[Background](#background)
+[Topics](#topics)
+[Methodology](#methodology)
+[References](#references)
+[Contact](#contact)
 
 ## Background
 
@@ -28,8 +28,8 @@ This is more a personal project, intended to build back up my confidence in tink
 
 ## Topics
 
-Some things I want to accomplish:
-[] UART communication with Pico
+Some things I want to accomplish:  
+[] UART communication with Pico  
 [] ...more to come!
 
 ## References
