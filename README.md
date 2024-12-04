@@ -28,13 +28,13 @@ This is more a personal project, intended to build back up my confidence in tink
 
 ## Topics
 
-Some things I want to accomplish:  
-[] UART communication with Pico  
+Some things I want to accomplish:<br> 
+[] UART communication with Pico<br>
 [] ...more to come!
 
 ## References
-Raspberry Pi Pico Repo: [Link](https://github.com/raspberrypi/pico-sdk)
-Raspberry Pi Pico SDK: [Link](https://datasheets.raspberrypi.com/pico/raspberrypi-pico-c-sdk.pdf)
+Raspberry Pi Pico Repo: [Link](https://github.com/raspberrypi/pico-sdk)<br>
+Raspberry Pi Pico SDK: [Link](https://datasheets.raspberrypi.com/pico/raspberrypi-pico-c-sdk.pdf)<br>
 - various youtube sources, will post eventually
 
 ## Contact
