@@ -16,11 +16,11 @@ I've used some microcontrollers back in college:
 
 ## Table of Contents
 
-[Background](#background)
-[Topics](#topics)
-[Methodology](#methodology)
-[References](#references)
-[Contact](#contact)
+[Background](#background)<br>
+[Topics](#topics)<br>
+[Methodology](#methodology)<br>
+[References](#references)<br>
+[Contact](#contact)<br>
 
 ## Background
 
