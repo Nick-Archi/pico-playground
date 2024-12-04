@@ -1,0 +1,5 @@
+# ignore these directories
+**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/CMakeScripts/
