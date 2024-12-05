@@ -6,7 +6,7 @@ Welcome to my project repo!
 
 ## Intent
 
-I want to continue my interest in the Raspberry Pi Pico and re-explore areas I learned about in college and find new fields of interest. Think of this as my playground
+I want to continue my interest in the Raspberry Pi Pico (RP 2350) and re-explore areas I learned about in college and find new fields of interest. Think of this as my playground
 
 I've used some microcontrollers back in college:
 - 3pi Robot (ATmega328)
