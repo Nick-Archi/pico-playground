@@ -22,7 +22,7 @@ Steps are from: [Link](https://github.com/raspberrypi/pico-sdk/tree/master)
     ```
     $ mkdir build
     $ cd build
-    $ cmake -DPICO_PLATFORM=rp2350-arm-s
+    $ cmake -DPICO_PLATFORM=rp2350-arm-s ..
     ```
 
 4. Call make to create the target
