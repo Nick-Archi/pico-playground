@@ -37,7 +37,7 @@ Some things I want to accomplish:<br>
 ## References
 Raspberry Pi Pico Repo: [Link](https://github.com/raspberrypi/pico-sdk)<br>
 Raspberry Pi Pico SDK: [Link](https://datasheets.raspberrypi.com/pico/raspberrypi-pico-c-sdk.pdf)<br>
-Raspbery Pi Pico High Level Doc: [Link](https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#)<br>
+Raspberry Pi Pico High Level Doc: [Link](https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#)<br>
 - various youtube sources, will post eventually
 
 ## Contact

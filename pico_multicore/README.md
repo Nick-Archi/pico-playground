@@ -1,14 +1,14 @@
-# Multicore Raspberry Pi Pico Program
+# Multicore Pico Program
 
-This is just an introductory project to familiar with the basics of:
+An introductory project to get familiar with the basics of:
 - utilizing the multicore functionality of the RP2350
 - interacting with the shared FIFO on the RP2350
 
-# Quick Steps
+# Pico SDK Project Setup Steps
 
-Steps are from: [Link](https://github.com/raspberrypi/pico-sdk/tree/master)
+Steps are obtained & adapted from pico-sdk repo: [Link](https://github.com/raspberrypi/pico-sdk/tree/master)
 
-## Building via Linux Command Line
+# Build Project via Linux Terminal
 1. Assuming all packages & libraries installed properly, if not then follow main pico-sdk link to get setup.
 
 2. Setup project to point to Raspberry Pi Pico SDK
