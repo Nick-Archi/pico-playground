@@ -3,3 +3,6 @@
 **/CMakeFiles/
 **/CMakeCache.txt
 **/CMakeScripts/
+
+# ignore these files
+*.swp

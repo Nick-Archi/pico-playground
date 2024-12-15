@@ -24,7 +24,7 @@ Steps are from: [Link](https://github.com/raspberrypi/pico-sdk/tree/master)
     $ cmake ..
     ```
 
-    # PICO_PLATFORM moved to CMakeLists.txt, otherwise call cmake -DPICO_PLATFORM=rp2350-arm-s ..
+    - PICO_PLATFORM moved to CMakeLists.txt, otherwise call cmake -DPICO_PLATFORM=rp2350-arm-s ..
 
 4. Call make to create the target
     ```

@@ -30,11 +30,14 @@ This is more a personal project, intended to build back up my confidence in tink
 
 Some things I want to accomplish:<br> 
 [] UART communication with Pico<br>
+[] Multicore interaction on Pico<br>
+[] Utilizing RISC-V core on Pico<br>
 [] ...more to come!
 
 ## References
 Raspberry Pi Pico Repo: [Link](https://github.com/raspberrypi/pico-sdk)<br>
 Raspberry Pi Pico SDK: [Link](https://datasheets.raspberrypi.com/pico/raspberrypi-pico-c-sdk.pdf)<br>
+Raspbery Pi Pico High Level Doc: [Link](https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#)<br>
 - various youtube sources, will post eventually
 
 ## Contact
