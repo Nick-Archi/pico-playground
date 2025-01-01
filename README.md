@@ -38,6 +38,7 @@ Some things I want to accomplish:<br>
 Raspberry Pi Pico Repo: [Link](https://github.com/raspberrypi/pico-sdk)<br>
 Raspberry Pi Pico SDK: [Link](https://datasheets.raspberrypi.com/pico/raspberrypi-pico-c-sdk.pdf)<br>
 Raspberry Pi Pico High Level Doc: [Link](https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#)<br>
+Raspberry Pi Pico2 Pinout PDF : [Link](datasheets.raspberrypi.com/pico/Pico-2-Pinout.pdf)
 - various youtube sources, will post eventually
 
 ## Contact
