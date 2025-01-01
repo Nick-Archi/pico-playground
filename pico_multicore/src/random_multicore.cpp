@@ -7,7 +7,7 @@
 
 #define GPIO_ON 1
 #define GPIO_OFF 0
-#define LED_PIN 25
+#define GPIO_PIN 22
 #define HASH_AMOUNT 20
 #define SLEEP_AMOUNT 1000
 
@@ -55,7 +55,7 @@ struct gpioState
     {
         this->state = !this->state;
     }
-}gpio1(LED_PIN);
+}gpio1(GPIO_PIN);
 
 /**
 * @brief Context of execution for Core 1 on RP2350

@@ -4,7 +4,7 @@
 #define GPIO_ON 1
 #define GPIO_OFF 0
 
-#define LED_PIN 25
+#define GPIO_PIN 22
 
 void second_core_code()
 {
@@ -21,13 +21,13 @@ int main()
 {
     multicore_launch_core1(second_core_code);
 
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_init(GPIO_PIN);
+    gpio_set_dir(GPIO_PIN, GPIO_OUT);
     
     while(true)
     {
         uint32_t cmd = multicore_fifo_pop_blocking();
-        gpio_put(LED_PIN, cmd);
+        gpio_put(GPIO_PIN, cmd);
     }
 }
 
