@@ -6,7 +6,7 @@ set(EXEC_NAME "blink")
 
 # initialize the SDK based on PICO_SDK_PATH
 # note: this happens before the project()
-include($ENV{PICO_SDK_PATH}/pico_sdk_import.cmake)
+include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 project(my_project)
 
