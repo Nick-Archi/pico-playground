@@ -7,7 +7,7 @@ set(EXEC1_NAME "hello_freertos")
 
 # initialize the SDK based on PICO_SDK_PATH
 # note: this happens before the project()
-include($ENV{PICO_SDK_PATH}/pico_sdk_import.cmake)
+include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 project(my_project)
 
@@ -17,7 +17,13 @@ pico_sdk_init()
 # rest of proj
 
 # GLOB RECURSE SEARCH FOR FREERTOS SOURCE FILES
-file(GLOB_RECURSE FREERTOS_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/FreeRTOS/Source/*.c)
+file(GLOB FREERTOS_SRC_FILES $ENV{FREERTOS_KERNEL_PATH}/*.c)
+
+# find other *.c files necessary for FreeRTOS Kernel building
+file(GLOB NON_SECURE_SRC_FILES $ENV{FREERTOS_KERNEL_PATH}/portable/ThirdParty/Community-Supported-Ports/GCC/RP2350_ARM_NTZ/non_secure/*.c)
+file(GLOB HEAP_SRC_FILES $ENV{FREERTOS_KERNEL_PATH}/portable/MemMang/*.c)
+
+list(APPEND FREERTOS_SRC_FILES ${NON_SECURE_SRC_FILES} ${HEAP_SRC_FILES})
 
 # remove heap_*.c files so only 1 remains...
 set(FILES_TO_REMOVE "heap_1.c" "heap_2.c" "heap_3.c" "heap_5.c")
@@ -47,8 +53,8 @@ target_link_libraries(${EXEC1_NAME}
     hardware_exception
 )
 
-target_include_directories(${EXEC1_NAME} PRIVATE FreeRTOS/Source/include/)
-target_include_directories(${EXEC1_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../FreeRTOS-Kernel/portable/ThirdParty/Community-Supported-Ports/GCC/RP2350_ARM_NTZ/non_secure/)
+target_include_directories(${EXEC1_NAME} PRIVATE $ENV{FREERTOS_KERNEL_PATH}/include/)
+target_include_directories(${EXEC1_NAME} PRIVATE $ENV{FREERTOS_KERNEL_PATH}/portable/ThirdParty/Community-Supported-Ports/GCC/RP2350_ARM_NTZ/non_secure/)
 target_include_directories(${EXEC1_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # tell compiler to use the USB output and disable UART output
