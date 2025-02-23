@@ -1,57 +1,71 @@
-# Output via USB Raspberry Pi Pico Program
+# USB Serial Input Program
 
-Project Objectives:
-- Blink an LED and output to USB
-- Connect to Pico2 via serial connection
+## Table of Content
+[Overview](#overview)<br>
+[Objective](#objective)<br>
+[Setup](#setup)<br>
+[Building](#building)<br>
+[Executing](#executing)<br>
+[Learnings](#learnings)<br>
+[Useful](#useful)<br>
+[Resources](#resources)<br>
 
-Steps are from: [Link](https://github.com/raspberrypi/pico-sdk/tree/master)
+## Overview
 
-# Quick Steps
+An introductory project to get familiar with the basics of:
+- Interacting with the pico2 via user inputs through serial
 
-## Following on a Linux Command Line
-1. Assuming all packages & libraries installed properly, if not then follow main pico-sdk link to get setup.
+2 Source Files:
+usb_input.c -> basic source file that is controlling 1 LED
+usb_input_lvl2.c -> source file controlling 2 LEDs
 
-    * Ensure that tinyUSB has been initialized in sdk path
-    ```
-        $ cd $PICO_SDK_PATH/lib/tinyusb
-        git submodule update --init
-    ```
+## Objective
 
-2. Setup project to point to Raspberry Pi Pico SDK
-    * Creating a ~/.bashrc and entering the path
-    ```
-    export PICO_SDK_PATH=<USER-DEFINED-PATH>
-    ```
+[] Control the state of LEDs connected to the pico2 
 
-3. Setup & call cmake targeting ARM core
+## Setup
+
+Here's how I setup the GPIO Ports on the Pico2
+
+Pico2 Connection:
+LED1 -> GP22(pin29)<br>
+LED2 -> GP21(pin37)<br>
+
+Picture:
+![LED_connections](images/led_connections.jpg)
+
+## Building 
+1. Setup & call cmake
     ```
     $ mkdir build
     $ cd build
-    $ cmake -DPICO_PLATFORM=rp2350-arm-s ..
+    $ cmake ..
     ```
 
-4. Call make to create the target
+    - PICO_PLATFORM moved to CMakeLists.txt, otherwise call cmake -DPICO_PLATFORM=rp2350-arm-s ..
+
+2. Call make to create the target
     ```
     $ make
     ```
 
-5. Drag and drop <project_name>.uf2 file onto pico board via connected USB.
+3. Move <project_name>.uf2 onto the pico board connected via USB
+   - Drag and drop the uf2 file OR
 
-6. Find out where the board connected to
     ```
-    $ watch -n 2 "dmesg|tail"
+    $ cp ./build/<project_name>.uf2 /media/<user>/RP2350
+    ```
+## Learnings
+
+1. Reading from Serial
+- Depending if you're reading a char or string from the input, you would either use getchar() or fgets() respectively.
+
+## Useful
+
+- View logs from the kernel to see USB connections
+    ```
+    $ watch -n 1 "sudo dmesg | tail -n 20"
     ```
 
-7. Connect via minicom
-    * You may have to use sudo in front of minicom if permission error happens
-    ```
-    $ minicom -D <location-board-connected>, ex) minicom -D /dev/ttyACM0 
-    ```
+## Resources
 
-    * May have to change the BAUD rate to 115200
-    ```
-    - Open minicom
-    - Press ctrl-A, then Z
-    - Enter O
-    - Select Serial Port Setup  
-    ```
