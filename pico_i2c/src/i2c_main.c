@@ -12,6 +12,8 @@
 #include "hardware/i2c.h"
 
 #define I2C_PORT i2c0
+#define GPIO_I2C0_SDA_PIN 4
+#define GPIO_I2C0_SCL_PIN 5
 
 // address of where adxl345 connected on i2c line
 // obtained from ADXL345.pdf Register Definitions Table 16
@@ -55,19 +57,46 @@ int main(void)
     printf("Baud Rate Set to: %d\n", i2c_init(I2C_PORT, 400 * 1000));
 
     // configure GPIO Pins for I2C communication
-    gpio_set_function(4, GPIO_FUNC_I2C);
-    gpio_set_function(5, GPIO_FUNC_I2C);
+    gpio_set_function(GPIO_I2C0_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(GPIO_I2C0_SCL_PIN, GPIO_FUNC_I2C);
 
     // enable GPIO pull-ups
-    gpio_pull_up(4);
-    gpio_pull_up(5);
+    gpio_pull_up(GPIO_I2C0_SDA_PIN);
+    gpio_pull_up(GPIO_I2C0_SCL_PIN);
 
     // call accelerometer init function
     accel_init();
 
+// check the rate bit in 0x2C register?
+// rate bits are: 0 -> 3 (mask of 0x0F)
+// rate bits initially set to 0x0A according to datasheet
+uint8_t reg_value = 0x00;
+uint8_t bw_rate_reg = 0x2C;
+i2c_write_blocking(I2C_PORT, i2c_dev_addr, &bw_rate_reg, 1, true);
+i2c_read_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
+printf("DEBUG: rate bits PRIOR = 0x%X\n", reg_value & 0x0F);
+
+sleep_ms(.500);
+
+// attmempting to modify the rate bits now
+// select output rate of 400Hz
+reg_value = (reg_value & 0xF0) | 0x0C; // this is 1100 according to table 6 in datasheet
+printf("DEBUG: reg_value modified: 0x%X\n", reg_value);
+uint8_t data[2];
+data[0] = bw_rate_reg;
+data[1] = reg_value;
+i2c_write_blocking(I2C_PORT, i2c_dev_addr, data, 2, false);
+//i2c_write_blocking(I2C_PORT, i2c_dev_addr, &bw_rate_reg, 1, true);
+//i2c_write_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
+
+i2c_write_blocking(I2C_PORT, i2c_dev_addr, &bw_rate_reg, 1, true);
+i2c_read_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
+printf("DEBUG: rate bits AFTER = 0x%X\n", reg_value & 0x0F);
+
+while(1);
+
     // accelerometer setup required?
     // set measure bit in POWER_CTL register (0x2D)
-    uint8_t reg_value = 0x00;
     uint8_t power_reg = 0x2D;
 //    i2c_write_blocking(I2C_PORT, i2c_dev_addr, &power_reg, 1, true);
 //    i2c_read_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
