@@ -1,9 +1,11 @@
 /*
 * Objective:
-* [] Create a source file that will utilize an accelerometer to output it's 3D information
+* [] Create a source file that will utilize an accelerometer to output the
+* data on the x, y, & z axis
 *
 * Hardware Used:
 * Sparkfun ADXL345 (https://www.analog.com/en/products/adxl345.html)
+*
 * i2c Documentation on ADXL345 (https://cdn.sparkfun.com/assets/9/1/8/9/9/ADXL345.pdf)
 */
 
@@ -38,48 +40,18 @@ void init_i2c_pico(void)
 }
 
 /*
-* @brief Function used to ensure that ADXL345 is connected
-*/
-void accel_init(void)
-{
-    // check if the connection is valid
-    sleep_ms(1000); // allow the accelerometer to configure itself
-
-    uint8_t reg = 0x00; // devID for accelerometer
-    uint8_t chipID[1]; // hold data for receiving
-
-    //  
-    i2c_write_blocking(I2C_PORT, i2c_dev_addr, &reg, 1, true);
-    i2c_read_blocking(I2C_PORT, i2c_dev_addr, chipID, 1, false);
-
-    if(chipID[0] != 0xE5)
-    {
-        while(1)
-        {
-            printf("Chip ID Not Correct - Check Connection\n");
-            sleep_ms(5000);
-        }
-    }
-
-    
-    sleep_ms(3000);
-    printf("Connected to Accelerometer\n");
-}
-
-/*
 * @brief Perform an i2c write-read operation to obtain the 8 bit
 * value of the register.
 *
 * @param reg, pointer to interested register
+* @param data, dump contents read here
+* @param bytes, number of bytes to read
 *
-* @return 8 bit value containing register contents
 */
-uint8_t i2c_read_address(uint8_t* reg)
+void i2c_read_address(uint8_t* reg, uint8_t* data, size_t bytes)
 {
-    uint8_t data;
     i2c_write_blocking(I2C_PORT, i2c_dev_addr, reg, 1, true);
-    i2c_read_blocking(I2C_PORT, i2c_dev_addr, &data, 1, false);
-    return data;
+    i2c_read_blocking(I2C_PORT, i2c_dev_addr, data, bytes, false);
 }
 
 /*
@@ -95,18 +67,43 @@ void i2c_write_address(uint8_t* data, size_t bytes)
    i2c_write_blocking(I2C_PORT, i2c_dev_addr, data, bytes, false); 
 }
 
+/*
+* @brief Function used to ensure that ADXL345 is connected
+*/
+void accel_init(void)
+{
+    // check if the connection is valid
+    sleep_ms(1000); // allow the accelerometer to configure itself
+
+    uint8_t reg = 0x00; // devID for accelerometer
+    uint8_t chipID; // hold data for receiving
+
+    i2c_read_address(&reg, &chipID, 1);
+
+    if(chipID != 0xE5)
+    {
+        while(1)
+        {
+            printf("Chip ID Not Correct - Check Connection\n");
+            sleep_ms(5000);
+        }
+    }
+    
+    sleep_ms(3000);
+    printf("Connected to Accelerometer\n");
+}
+
 int main(void)
 {
     stdio_init_all();
     init_i2c_pico();
     accel_init();
 
-    // check the rate bit in 0x2C register?
     // rate bits are: 0 -> 3 (mask of 0x0F)
     // rate bits initially set to 0x0A according to datasheet
     uint8_t reg_value = 0x00;
     uint8_t bw_rate_reg = 0x2C;
-    reg_value = i2c_read_address(&bw_rate_reg);
+    i2c_read_address(&bw_rate_reg, &reg_value, 1);
     printf("DEBUG: rate bits PRIOR = 0x%X\n", reg_value & 0x0F);
 
     // modify rate bits to select output rate of 400Hz
@@ -117,24 +114,20 @@ int main(void)
 
     i2c_write_address(data, 2);
 
-    reg_value = i2c_read_address(&bw_rate_reg);
+    i2c_read_address(&bw_rate_reg, &reg_value, 1);
     printf("DEBUG: rate bits AFTER = 0x%X\n", reg_value & 0x0F);
 
-//while(1);
-
-    // accelerometer setup required?
+    // accelerometer setup required
     // set measure bit in POWER_CTL register (0x2D)
     uint8_t power_reg = 0x2D;
-    reg_value = i2c_read_address(&power_reg);
+    i2c_read_address(&power_reg, &reg_value, 1);
     printf("DEBUG: power_reg contents PRIOR = 0x%X\n", reg_value);
 
     // modify the value in 0x2D now
-    reg_value |= (1 << 3);
     data[0] = power_reg;
-    data[1] = reg_value;
+    data[1] = reg_value | (1 << 3);
     i2c_write_address(data, 2);
-
-    reg_value = i2c_read_address(&power_reg);
+    i2c_read_address(&power_reg, &reg_value, 1);
     printf("DEBUG: power_reg contents AFTER = 0x%X\n", reg_value);
 
     // read the x,y,z axis
@@ -143,12 +136,12 @@ int main(void)
     float f_accel_x, f_accel_y, f_accel_z;
     uint8_t datax0_addr = 0x32; // start of DATAX0
 
-    // continually read axis values
     while(1)
     {
-        i2c_write_blocking(I2C_PORT, i2c_dev_addr, &datax0_addr, 1, true);
-        i2c_read_blocking(I2C_PORT, i2c_dev_addr, store, 6, false);
+        i2c_read_address(&datax0_addr, store, 6);
 
+        // shift contents to produce 16bit value 
+        // shifting MSB correctly, ORing with LSB
         accel_x = ((store[1] << 8) | store[0]);
         accel_y = ((store[3] << 8) | store[2]);
         accel_z = ((store[5] << 8) | store[4]);
