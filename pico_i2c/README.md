@@ -73,6 +73,6 @@ Picture:
 
 ## Resources
 
-[I2C Sparkfun Documentation](https://learn.sparkfun.com/tutorials/i2c#i2c-at-the-hardware-level)
-[ADXL345 DataSheet](https://cdn.sparkfun.com/assets/9/1/8/9/9/ADXL345.pdf)
-[ADXL345 Hookup Guide](https://learn.sparkfun.com/tutorials/adxl345-hookup-guide/all)
+[I2C Sparkfun Documentation](https://learn.sparkfun.com/tutorials/i2c#i2c-at-the-hardware-level)<br>
+[ADXL345 DataSheet](https://cdn.sparkfun.com/assets/9/1/8/9/9/ADXL345.pdf)<br>
+[ADXL345 Hookup Guide](https://learn.sparkfun.com/tutorials/adxl345-hookup-guide/all)<br>
