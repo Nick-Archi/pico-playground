@@ -25,12 +25,12 @@ An introductory project to get familiar with the basics of:
 Here's how I setup the GPIO Ports on the Pico2
 
 On ADXL345 Connection:
-SCL -> GP4(pin6)
-SDA -> GP5(pin7)
-VCC -> 3V3(OUT, pin 36)
-GND -> GND(pin 38)
-CS -> 3V3(OUT, pin 36)
-SD0 -> GND(pin 38)
+SCL -> GP4(pin6)<br>
+SDA -> GP5(pin7)<br>
+VCC -> 3V3(OUT, pin 36)<br>
+GND -> GND(pin 38)<br>
+CS -> 3V3(OUT, pin 36)<br>
+SD0 -> GND(pin 38)<br>
 
 Picture:
 ![ADXL345 connected to RP2350](images/ADXL345_connect_2_pico2.jpg)
