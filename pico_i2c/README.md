@@ -1,23 +1,42 @@
-# Multicore Pico Program
+# I2C Pico Program
+
+## Table of Content
+[Overview](#overview)<br>
+[Objective](#objective)<br>
+[Setup](#setup)<br>
+[Building](#building)<br>
+[Executing](#executing)<br>
+[Learnings](#learnings)<br>
+[Useful](#useful)<br>
+[Resources](#resources)<br>
+
+## Overview
 
 An introductory project to get familiar with the basics of:
-- utilizing the multicore functionality of the RP2350
-- interacting with the shared FIFO on the RP2350
+- utilizing the i2c functionality of the RP2350
+- interacting with an ADXL345 accelerometer that's connected to the RP2350 
 
-# Pico SDK Project Setup Steps
+## Objective
 
-Steps are obtained & adapted from pico-sdk repo: [Link](https://github.com/raspberrypi/pico-sdk/tree/master)
+[] Read the x, y, & z axis from the ADXL345 accelerometer
 
-# Build Project via Linux Terminal
-1. Assuming all packages & libraries installed properly, if not then follow main pico-sdk link to get setup.
+## Setup
 
-2. Setup project to point to Raspberry Pi Pico SDK
-    * Creating a ~/.bashrc and entering the path
-    ```
-    export PICO_SDK_PATH=<USER-DEFINED-PATH>
-    ```
+Here's how I setup the GPIO Ports on the Pico2
 
-3. Setup & call cmake
+On ADXL345 Connection:
+SCL -> GP4(pin6)
+SDA -> GP5(pin7)
+VCC -> 3V3(OUT, pin 36)
+GND -> GND(pin 38)
+CS -> 3V3(OUT, pin 36)
+SD0 -> GND(pin 38)
+
+Picture:
+![ADXL345 connected to RP2350](images/ADXL345_connect_2_pico2.jpg)
+
+## Building 
+1. Setup & call cmake
     ```
     $ mkdir build
     $ cd build
@@ -26,21 +45,34 @@ Steps are obtained & adapted from pico-sdk repo: [Link](https://github.com/raspb
 
     - PICO_PLATFORM moved to CMakeLists.txt, otherwise call cmake -DPICO_PLATFORM=rp2350-arm-s ..
 
-4. Call make to create the target
+2. Call make to create the target
     ```
     $ make
     ```
 
-5. Drag and drop <project_name>.uf2 file onto pico board via connected USB.
+3. Move <project_name>.uf2 onto the pico board connected via USB
+   - Drag and drop the uf2 file OR
 
-# Project Learnings
+    ```
+    $ cp ./build/<project_name>.uf2 /media/<user>/RP2350
+    ```
+## Learnings
 
-1. Debug USB connection
+1. Debug I2C connection
+- Added a small check to ensure that I could talk to the ADXL345. Within the datasheet, it explains how to check the DevID.
 
-- Was unable to connect via USB after flashing. Realized the stdio_init_all() was missing. This is usd to initialize the I/O on the board after flashing (UART, USB, etc).
+2. Single i2c_write_blocking for multiple writes 
+- initially, I was unable to modify targeted registers. I was performing i2c writes using separate i2c_write_blocking calls but I decided to combine them into 1 and instead change the parameter regarding the number of bytes being sent.
+
+## Useful
 
 - View logs from the kernel to see USB connections
     ```
     $ watch -n 1 "sudo dmesg | tail -n 20"
     ```
 
+## Resources
+
+[I2C Sparkfun Documentation](https://learn.sparkfun.com/tutorials/i2c#i2c-at-the-hardware-level)
+[ADXL345 DataSheet](https://cdn.sparkfun.com/assets/9/1/8/9/9/ADXL345.pdf)
+[ADXL345 Hookup Guide](https://learn.sparkfun.com/tutorials/adxl345-hookup-guide/all)
