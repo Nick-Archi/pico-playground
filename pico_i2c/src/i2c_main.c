@@ -12,12 +12,30 @@
 #include "hardware/i2c.h"
 
 #define I2C_PORT i2c0
+#define BAUD_RATE ((400) * (1000))
 #define GPIO_I2C0_SDA_PIN 4
 #define GPIO_I2C0_SCL_PIN 5
 
 // address of where adxl345 connected on i2c line
 // obtained from ADXL345.pdf Register Definitions Table 16
 static int i2c_dev_addr = 0x53; 
+
+/*
+* @brief Initialize the i2c communication on the pico2
+*/
+void init_i2c_pico(void)
+{
+    // configure i2c communication
+    printf("Baud Rate Set to: %d\n", i2c_init(I2C_PORT, BAUD_RATE));
+
+    // configure GPIO Pins for I2C communication
+    gpio_set_function(GPIO_I2C0_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(GPIO_I2C0_SCL_PIN, GPIO_FUNC_I2C);
+
+    // enable GPIO pull-ups
+    gpio_pull_up(GPIO_I2C0_SDA_PIN);
+    gpio_pull_up(GPIO_I2C0_SCL_PIN);
+}
 
 /*
 * @brief Function used to ensure that ADXL345 is connected
@@ -48,63 +66,76 @@ void accel_init(void)
     printf("Connected to Accelerometer\n");
 }
 
+/*
+* @brief Perform an i2c write-read operation to obtain the 8 bit
+* value of the register.
+*
+* @param reg, pointer to interested register
+*
+* @return 8 bit value containing register contents
+*/
+uint8_t i2c_read_address(uint8_t* reg)
+{
+    uint8_t data;
+    i2c_write_blocking(I2C_PORT, i2c_dev_addr, reg, 1, true);
+    i2c_read_blocking(I2C_PORT, i2c_dev_addr, &data, 1, false);
+    return data;
+}
+
+/*
+* @brief Perform an i2c write-write operation to modify the 8 bit
+* value of the register.
+*
+* @param data, pointer to array containing input data
+* @param bytes, number of bytes to write from data input
+*
+*/
+void i2c_write_address(uint8_t* data, size_t bytes)
+{
+   i2c_write_blocking(I2C_PORT, i2c_dev_addr, data, bytes, false); 
+}
+
 int main(void)
 {
     stdio_init_all();
-    sleep_ms(2000);    
-    
-    // configure i2c communication
-    printf("Baud Rate Set to: %d\n", i2c_init(I2C_PORT, 400 * 1000));
-
-    // configure GPIO Pins for I2C communication
-    gpio_set_function(GPIO_I2C0_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(GPIO_I2C0_SCL_PIN, GPIO_FUNC_I2C);
-
-    // enable GPIO pull-ups
-    gpio_pull_up(GPIO_I2C0_SDA_PIN);
-    gpio_pull_up(GPIO_I2C0_SCL_PIN);
-
-    // call accelerometer init function
+    init_i2c_pico();
     accel_init();
 
-// check the rate bit in 0x2C register?
-// rate bits are: 0 -> 3 (mask of 0x0F)
-// rate bits initially set to 0x0A according to datasheet
-uint8_t reg_value = 0x00;
-uint8_t bw_rate_reg = 0x2C;
-i2c_write_blocking(I2C_PORT, i2c_dev_addr, &bw_rate_reg, 1, true);
-i2c_read_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
-printf("DEBUG: rate bits PRIOR = 0x%X\n", reg_value & 0x0F);
+    // check the rate bit in 0x2C register?
+    // rate bits are: 0 -> 3 (mask of 0x0F)
+    // rate bits initially set to 0x0A according to datasheet
+    uint8_t reg_value = 0x00;
+    uint8_t bw_rate_reg = 0x2C;
+    reg_value = i2c_read_address(&bw_rate_reg);
+    printf("DEBUG: rate bits PRIOR = 0x%X\n", reg_value & 0x0F);
 
-sleep_ms(.500);
+    // modify rate bits to select output rate of 400Hz
+    reg_value = (reg_value & 0xF0) | 0x0C; // this is 1100 according to table 6 in datasheet
+    uint8_t data[2];
+    data[0] = bw_rate_reg;
+    data[1] = reg_value;
 
-// attmempting to modify the rate bits now
-// select output rate of 400Hz
-reg_value = (reg_value & 0xF0) | 0x0C; // this is 1100 according to table 6 in datasheet
-printf("DEBUG: reg_value modified: 0x%X\n", reg_value);
-uint8_t data[2];
-data[0] = bw_rate_reg;
-data[1] = reg_value;
-i2c_write_blocking(I2C_PORT, i2c_dev_addr, data, 2, false);
-//i2c_write_blocking(I2C_PORT, i2c_dev_addr, &bw_rate_reg, 1, true);
-//i2c_write_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
+    i2c_write_address(data, 2);
 
-i2c_write_blocking(I2C_PORT, i2c_dev_addr, &bw_rate_reg, 1, true);
-i2c_read_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
-printf("DEBUG: rate bits AFTER = 0x%X\n", reg_value & 0x0F);
+    reg_value = i2c_read_address(&bw_rate_reg);
+    printf("DEBUG: rate bits AFTER = 0x%X\n", reg_value & 0x0F);
 
-while(1);
+//while(1);
 
     // accelerometer setup required?
     // set measure bit in POWER_CTL register (0x2D)
     uint8_t power_reg = 0x2D;
-//    i2c_write_blocking(I2C_PORT, i2c_dev_addr, &power_reg, 1, true);
-//    i2c_read_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false);
+    reg_value = i2c_read_address(&power_reg);
+    printf("DEBUG: power_reg contents PRIOR = 0x%X\n", reg_value);
 
     // modify the value in 0x2D now
     reg_value |= (1 << 3);
-    i2c_write_blocking(I2C_PORT, i2c_dev_addr, &power_reg, 1, true);
-    i2c_write_blocking(I2C_PORT, i2c_dev_addr, &reg_value, 1, false); 
+    data[0] = power_reg;
+    data[1] = reg_value;
+    i2c_write_address(data, 2);
+
+    reg_value = i2c_read_address(&power_reg);
+    printf("DEBUG: power_reg contents AFTER = 0x%X\n", reg_value);
 
     // read the x,y,z axis
     uint8_t store[6]; // storage for x1,x0,y1,y0,z1,z0 axis reads
