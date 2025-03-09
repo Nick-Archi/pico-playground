@@ -1,0 +1,71 @@
+Working on getting this OLED to work via SPI communication on the RP2350
+
+OLED: inland 1.3" 128x64 OLED Graphic Display:
+-- This OLED seems to use a SH1106 controller to drive the signals to the OLED?
+
+https://www.microcenter.com/product/643965/inland-iic-spi-13-128x64-oled-v20-graphic-display-module-for-arduino-uno-r3
+https://wiki.keyestudio.com/index.php/Ks0056_keyestudio_1.3%22_128x64_OLED_Graphic_Display
+Adafruit SH1106 Documentation: https://cdn-shop.adafruit.com/product-files/5228/5223-ds.pdf
+
+I found some other links:
+8 Bit Graphics Library: https://github.com/olikraus/u8g2
+Ardiuno Post: https://forum.arduino.cc/t/u8g2-graphics-library-for-monochrome-oleds-and-lcds/394731
+SH1106 Controller for OLED: https://www.pololu.com/file/0J1813/SH1106.pdf
+
+Useful Links:
+https://github.com/orgs/micropython/discussions/10619
+https://joe.blog.freemansoft.com/2023/01/inland-iic-spi-13-128x64-oled-v20.html
+https://techatronic.com/ssd1306-raspberry-pi-pico/
+Offical Adafruit SH1106 Link: https://github.com/adafruit/Adafruit_SH110x/blob/master/
+Adafruit SH1106 Link: https://github.com/wonho-maker/Adafruit_SH1106/tree/master/
+Official Adafruit-GFX-Lib: https://github.com/adafruit/Adafruit-GFX-Library/blob/master/
+Creating BitMaps: https://learn.adafruit.com/monochrome-oled-breakouts/arduino-library-and-examples
+
+Analyzing the SH1106 PDF:
+[] I don't think that I have to worry about how the SH1106 is connected internally, since I bought this OLED I can skip this analysis for the most part
+[] One important thing is the System Bus Connection Pads:
+	- Important Symbols: CL, CS, A0, D0, D1
+		- CL -> Clock Signal
+		- CS -> Chip Select
+		- A0 -> Data Command (DC on OLED) 
+			- determines if the data bits are data or a command
+			- A0 = 1, data input is treated as display data
+			- A0 = 0, data input is sent to command register
+		- D0 -> Serial Clock Input Pad (SCL) ?
+		- D1 -> Serial Data Input Pad (SDAI)
+[] 4 Wire Serial Interface (4-wire SPI) is what the OLED is initially set to my understanding, I2C could be used but that requires manual configuration
+
+[] Page 14 is where it starts looking interesting?
+
+[] Access to Display Data RAM & Internal Registers
+	- When A0 = High (1), D7 - D0 input are seen as data and written to display RAM
+	- When A0 = Low (0), D7-D0 decoded and written to corresponding command register
+	
+[] Display Data RAM
+	- This is a bit mapped static RAM holding the bit pattern that will be displayed
+	- size of RAM is 132 * 64 bits
+
+** For the next 3 []'s it'll be easier to have the Fig8 open on the side for analysis...
+
+[] The Page Address Circuit
+	- Page Address Set Command will modify the page address for the display data RAM
+	- specifiying it again will set the page address will change it
+	
+[] The Column Address
+	** Peep the bottom of Fig8! And pay attention to ADC portion and how DC=1, or DC=0
+	- Display data RAM column address is specified by the column address set command
+	- it is incremented by +1 upon each display data read/write command
+	- column address is independent of page address
+		- make sure to respecifiy it when changing pages?
+	- Column remapping ADC command can reverse the display data RAM column address & segment output
+		
+[] The Line Address Circuit
+	- I am kind of confused on this...
+	- I think it's explaining how the data is fed from D0-D7 into each page that will essentially be displayed on the OLED
+	** revisit this again some time...
+	
+[] Reset Circuit
+	- explains what happens when RES input set to Low (0)
+	- seems to reset the OLED...
+	
+

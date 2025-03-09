@@ -1,0 +1,29 @@
+Useful ChatGPT Conversation regarding OLED and SH1106 controller interaction:
+
+Question:
+
+So I bought an OLED that seems to use the SH1106 to drive and control it. Is my assumption correct in that the OLED was built around this controller? So a lot of the signals I am seeing in the data sheet, I have no way to access them if the OLED already encapsulates the SH1106 controller?
+
+ChatGPT said:
+
+Yes, your assumption is correct. If the OLED display you're using is built around the SH1106 controller, then the controller is already integrated into the OLED module. This means that all the necessary circuitry to interface with the SH1106 is already embedded in the display itself. The signals and control lines for the SH1106 are typically made accessible via pins on the display module (such as SCL, SDA, VCC, GND, etc.), but the controller's internal workings are hidden within the module, so you won't need to directly access or control the SH1106's individual pins unless you're designing something more specialized.
+What You Have Access To:
+
+When you use an OLED display with an integrated SH1106 controller, typically, you will be dealing with the following:
+
+    Power Supply Pins (VCC and GND): These pins power the OLED and SH1106. You just connect VCC to a suitable power source (e.g., 3.3V or 5V depending on the display specification) and GND to ground.
+
+    Communication Pins (SCL, SDA for I2C or SCLK, MOSI, CS for SPI): You will connect these to the corresponding pins on your microcontroller or development board. These are the only signals you'll need to interface with for normal operation (whether for displaying text, images, etc.). You won’t have to worry about low-level control of the SH1106 itself, as it's abstracted away by libraries.
+
+    Reset Pin (if applicable): Some OLED modules have a dedicated RESET pin to control the SH1106’s initialization. You may need to toggle this pin when initializing the display, depending on your setup and microcontroller.
+
+Signals You Can't Access Directly:
+
+The SH1106 controller is embedded within the OLED module, so signals that are internal to the controller (e.g., internal power rails, control logic signals, or its internal memory access lines) aren't typically exposed to you. You won’t need to directly manipulate or access these, as they’re managed by the internal circuitry of the OLED module. Instead, you interact with the SH1106 via higher-level commands that are abstracted by libraries.
+What You Should Do:
+
+    Use a Library: To control the display, you can use a library like Adafruit_SH1106 (for Arduino) or u8g2 (for more generic use across platforms). These libraries handle the communication with the SH1106 and provide you with functions to display text, graphics, etc.
+
+    Follow the Pinout: Refer to the datasheet or schematic of your OLED module to ensure you're connecting the correct pins for I2C (SCL, SDA) or SPI (SCLK, MOSI, CS, etc.).
+
+In short, since the SH1106 is integrated into the OLED module, your task is simply to interface with it using the communication pins (I2C/SPI) and supply the appropriate power. The SH1106 itself, and most of the signals you see in its datasheet, are abstracted and managed by the OLED's internal circuitry, so you don't need to worry about them directly.

@@ -1,0 +1,64 @@
+Tracing the SH1106 Code start up...
+
+** Quick note:
+- to check the pin setup, search for (<PIN_NAME>)
+	- ex) (CS) or (RES)
+
+- Taking a look at their example code @:
+https://github.com/adafruit/Adafruit_SH110x/blob/master/examples/OLED_QTPY_SH1106/SH1106_128x64_SPi_QTPY/SH1106_128x64_SPi_QTPY.ino
+
+- I can see that Serial.begin() is called...what does this do?
+	- initializes the baud rate for SPI comm?
+	- Link: https://docs.arduino.cc/language-reference/en/functions/communication/serial/begin/
+	
+- display.begin(0,true)
+	- this is Adafruit_SH11106G object...
+	- Adafruit_SH1106G inherits from Adafruit_SH110X which inherits from Adafruit_GrayOLED
+	- guess it calls the begin method from: https://github.com/adafruit/Adafruit_SH110x/blob/master/Adafruit_SH1106G.cpp
+	- this immediately calls, Adafruit_GrayOLED::_init(addr, reset)
+	
+- Adafruit_GrayOLED::_init(addr, reset)
+	- file from: https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GrayOLED.cpp
+	- allocates RAM for image buffer, initializes the peripheral and pins.
+		- do I need an image buffer???
+	
+	- selects the reset(RES) pin to be OUTPUT
+	- writes a 1 to the reset pin and delays for 10ms to wait for Vdd to stabilize?
+	- writes 0 to reset pin and delays
+	- then writes 1 to reset pin to bring it out of reset?
+	** I guess this is all done to toggle the reset of the OLED...
+	
+	- then it executes spi_dev->begin()
+		- guessing this will initialize the SPI device?
+	- spi_dev = Adafruit_SPIDevice* 
+		- file: https://github.com/adafruit/Adafruit_BusIO/blob/master/Adafruit_SPIDevice.cpp
+		- this contains the Adafruit_SPIDevice::begin() ...
+		
+	- executing the Adafruit_SPIDevice::begin()
+		- sets (CS) pin to HIGH
+		** there's some preprocessor conditional that checks if it's a HWSPI...I will follow this...
+		
+	- calls _spi->begin()
+		- _spi is a SPIClass*
+			- File: https://github.com/arduino/ArduinoCore-avr/blob/master/libraries/SPI/src/SPI.cpp
+		** I didn't really explore this too much but it seems to configure the SS, SCK, and MOSI pins as output. Setting the SS pin to HIGH as an OUTPUT.
+			** I don't think translates 1:1 for the Pico. I think SS means Serial Select? Looks like it deals with if the device is the Controller or not (Pico always controller in this case...)
+		
+	- Return from Adafruit_SPIDevice::begin()
+	- Return back to Adafruit_GrayOLED::_init()
+	
+	- execute pinMode(dcPin, OUTPUT) to set the (DC) pin to output?
+	
+	- clearDisplay() called
+		- this seems to clear the memory buffer
+	
+	- sets some window stuff? But this was already called in clearDisplay() anyways???
+	
+	- return true for Adafruit_grayOLED::_init()...
+	
+	
+- Back in SH1106_128x64_SPi_QTPY example
+
+- call display.display()
+	- implementation here: https://github.com/adafruit/Adafruit_SH110x/blob/master/Adafruit_SH110X.cpp
+	- I think this will actually draw to the OLED?
