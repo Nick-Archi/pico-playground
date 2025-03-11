@@ -49,12 +49,22 @@ https://github.com/adafruit/Adafruit_SH110x/blob/master/examples/OLED_QTPY_SH110
 	
 	- execute pinMode(dcPin, OUTPUT) to set the (DC) pin to output?
 	
-	- clearDisplay() called
+	- Adafruit_GrayOLED::clearDisplay() called
 		- this seems to clear the memory buffer
+		- _bpp is defined in Adafruit_GrayOLED.h, stands for bits per pixel color level?
+			- b/c SH1106 inherits from SH110X which inherits from GrayOLED, this _bpp seems to be set to 1 in the SH110X constructor...
+		
 	
 	- sets some window stuff? But this was already called in clearDisplay() anyways???
 	
 	- return true for Adafruit_grayOLED::_init()...
+	
+	- back in Adafruit_SH1106::begin() call
+		- #ifndef SH110X_NO_SPLASH, execute drawBitmap()
+			- Adafruit_GFX::drawBitmap() ?
+		- execute the init sequence?
+		
+	- return true from Adafruit_SH1106::begin()
 	
 	
 - Back in SH1106_128x64_SPi_QTPY example

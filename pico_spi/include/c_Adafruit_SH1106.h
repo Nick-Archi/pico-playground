@@ -47,16 +47,28 @@ into an equivelent header file for C purposes
 #define BAUD    (1 * (10^6))
 
 /*
-* Attempt to make an Adafruit_SH1106 struct to mimic the class 
+* @enum 
+* @brief Enum to represent the initialization state of the SH1106 object.
+*
+*/
+typedef enum 
+{
+    UNINIT = 0,     /**< object has passed through parameter initialzation */
+    INIT = 1,       /**< object has setup SPI comm */
+    CONFIGED = 2,   /**<  */
+}SH1106_state;
+
+/*
+* Object that will hold configuration info for an SH1106 OLED 
 */
 typedef struct Adafruit_SH1106_t
 {
-    uint8_t dc;
+    uint8_t dc; /**< Data/Command: set 0: commands, set 1: data */
     uint8_t rst;
     uint8_t cs;
     uint8_t pico;
     uint8_t clk;
-    uint8_t init; // used to determine if ada struct initialized
+    SH1106_state init; // used to determine if ada struct initialized
 }Adafruit_SH1106;
 
 /*

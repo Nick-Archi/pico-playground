@@ -28,7 +28,7 @@
 #define SH1106_NORMALINVDISPL       0xA6
 #define SH1106_DISPLAYON            0xAF
 
-const uint8_t init_config_steps =
+const uint8_t init_config_steps[] =
 {
     SH1106_DISPLAYOFF, 
     SH1106_DISPLAYCLKDIVIDE,
@@ -54,7 +54,7 @@ const uint8_t init_config_steps =
     SH1106_NORMALINVDISPL
 };
 
-const uint8_t clear_screen_steps = 
+/*const uint8_t clear_screen_steps = 
 {
     SH1106_DISPLAYON
-};
+};*/
