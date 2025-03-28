@@ -3,6 +3,9 @@ Tracing the SH1106 Code start up...
 ** Quick note:
 - to check the pin setup, search for (<PIN_NAME>)
 	- ex) (CS) or (RES)
+	
+- Tracing the inheritance...
+	Adafruit_SH1106G -> Adafruit_SH110X -> Adafruit_GrayOLED -> Adafruit_GFX
 
 - Taking a look at their example code @:
 https://github.com/adafruit/Adafruit_SH110x/blob/master/examples/OLED_QTPY_SH1106/SH1106_128x64_SPi_QTPY/SH1106_128x64_SPi_QTPY.ino
@@ -20,7 +23,8 @@ https://github.com/adafruit/Adafruit_SH110x/blob/master/examples/OLED_QTPY_SH110
 - Adafruit_GrayOLED::_init(addr, reset)
 	- file from: https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GrayOLED.cpp
 	- allocates RAM for image buffer, initializes the peripheral and pins.
-		- do I need an image buffer???
+		- buffer is defined in the https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GrayOLED.h#L84 as uint8_t* buffer = NULL;
+			- do I need an image buffer???
 	
 	- selects the reset(RES) pin to be OUTPUT
 	- writes a 1 to the reset pin and delays for 10ms to wait for Vdd to stabilize?
@@ -28,10 +32,13 @@ https://github.com/adafruit/Adafruit_SH110x/blob/master/examples/OLED_QTPY_SH110
 	- then writes 1 to reset pin to bring it out of reset?
 	** I guess this is all done to toggle the reset of the OLED...
 	
+	*** This part gets hairy. B/c they're passing in the value 1000000 into a uint8_t*? So I'm confused as to why they are doing this
 	- then it executes spi_dev->begin()
 		- guessing this will initialize the SPI device?
-	- spi_dev = Adafruit_SPIDevice* 
+	- spi_dev is actually Adafruit_SPIDevice* 
 		- file: https://github.com/adafruit/Adafruit_BusIO/blob/master/Adafruit_SPIDevice.cpp
+		- header: https://github.com/adafruit/Adafruit_BusIO/blob/master/Adafruit_SPIDevice.h
+			- SPIClass is actually a typedef to uint8_t...confusing AF
 		- this contains the Adafruit_SPIDevice::begin() ...
 		
 	- executing the Adafruit_SPIDevice::begin()
@@ -57,12 +64,27 @@ https://github.com/adafruit/Adafruit_SH110x/blob/master/examples/OLED_QTPY_SH110
 	
 	- sets some window stuff? But this was already called in clearDisplay() anyways???
 	
+	** The HEIGHT & WIDTH seem to come from:
+		https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GFX.cpp
+		https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GFX.h#L204
+	
 	- return true for Adafruit_grayOLED::_init()...
 	
 	- back in Adafruit_SH1106::begin() call
 		- #ifndef SH110X_NO_SPLASH, execute drawBitmap()
 			- Adafruit_GFX::drawBitmap() ?
-		- execute the init sequence?
+				-- void Adafruit_GFX::drawBitmap(int16_t x, int16_t y, const uint8_t bitmap[],
+                              int16_t w, int16_t h, uint16_t color)
+ 					* splash2_data is defined in the splash.h in Adafruit_SH110x/
+			
+		- oled_commandList will execute the init sequence?
+			- implemented in Adafruit_GrayOLED::oled_command()
+			- sets dc pin low to initiate commands being sent to OLED?
+			
+		- delay for a bit...(100ms)
+		
+		- oled_command will send command to turn display on
+			- writes single byte via spi
 		
 	- return true from Adafruit_SH1106::begin()
 	

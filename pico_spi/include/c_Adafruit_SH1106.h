@@ -43,8 +43,8 @@ into an equivelent header file for C purposes
 #define POCI    PICO_DEFAULT_SPI_RX_PIN // DC pin on SH1106
 #define RST     20 // GPIO20 on RP2350
 
-#define SPI_PORT spi0
-#define BAUD    (1 * (10^6))
+#define SPI_PORT    spi0
+#define BAUD        (1000 * 1000)
 
 /*
 * @enum 
@@ -126,3 +126,21 @@ void begin_Adafruit_SH1106(Adafruit_SH1106* ada);
 * @param ada, Pointing to object that has been initialized.
 */
 void configure_sh1106(Adafruit_SH1106* ada);
+
+/*
+* @brief Sends a command to the SH1106 via SPI.
+*
+* Pre-reqs: initialized SPI communication
+*
+* @param ada, Pointing to object that has been initialized.
+*/
+void send_command_sh1106(Adafruit_SH1106* ada, uint8_t cmd);
+
+/*
+* @brief Sends a byte of data to the SH1106 via SPI.
+*
+* Pre-reqs: initialized SPI communication
+*
+* @param ada, Pointing to object that has been initialized.
+*/
+void send_data_sh1106(Adafruit_SH1106* ada, uint8_t data);

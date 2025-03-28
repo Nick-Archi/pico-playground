@@ -16,6 +16,8 @@ Tracing my code so far...
 	- set the CS pin HIGH to showcase no communication to chip yet
 	- initialize the reset of the lines used for SPI communication
 	
+*[] Possibly initialize 
+	
 ** So far my execution should follow: 
 	- call, init_Adafruit_SH1106
 	- call, initialize_spi(), resets the SH1106 board and sets up SPI
