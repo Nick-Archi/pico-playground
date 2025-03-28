@@ -61,19 +61,19 @@ typedef enum
 /*
 * Object that will hold configuration info for an SH1106 OLED 
 */
-typedef struct Adafruit_SH1106_t
+typedef struct SH1106_t
 {
     uint8_t dc; /**< Data/Command: set 0: commands, set 1: data */
     uint8_t rst;
     uint8_t cs;
     uint8_t pico;
     uint8_t clk;
-    SH1106_state init; // used to determine if ada struct initialized
-}Adafruit_SH1106;
+    SH1106_state init; // used to determine if oled struct initialized
+}SH1106;
 
 /*
 * @brief Initializer function to create and initalize
-* an Adafruit_SH1106 object
+* an SH1106 object
 *
 * @param dc, GPIO pin for Direct Comand
 * @param rst, GPIO pin for SPI Reset
@@ -81,10 +81,10 @@ typedef struct Adafruit_SH1106_t
 * @param pico, GPIO pin for Controller Out Peripheral In
 * @param clk, GPIO pin for clock
 *
-* @return Adafruit_SH1106*, pointer to object
+* @return SH1106*, pointer to object
 */
-void init_Adafruit_SH1106(
-    Adafruit_SH1106* ada,
+void init_SH1106(
+    SH1106* oled,
     uint8_t dc, 
     uint8_t rst, 
     uint8_t cs,
@@ -95,14 +95,14 @@ void init_Adafruit_SH1106(
 /*
 * @brief Function used to initalize & configure SPI
 *
-* Configures SPI and utilizes the Adafruit_SH1106 object
+* Configures SPI and utilizes the SH1106 object
 * to initialize and configure the GPIO pins on the Pico2
 *
-* @param Adafruit_SH1106* ada, pointer to object that is initialized
+* @param SH1106* oled, pointer to object that is initialized
 *
 * @return void
 */
-void initialize_spi(Adafruit_SH1106* ada);
+void initialize_spi(SH1106* oled);
 
 /*
 * @brief Runs the power-up sequence for the SH1106.
@@ -111,9 +111,16 @@ void initialize_spi(Adafruit_SH1106* ada);
 * and code found on their github. This function should run after
 * setting up SPI communication.
 *
-* @param ada, pointer to Adafruit_SH1106 that is already initialized 
+* @param oled, pointer to SH1106 that is already initialized 
 */
-void begin_Adafruit_SH1106(Adafruit_SH1106* ada);
+void begin_sh1106(SH1106* oled);
+
+/*
+* @brief Executes reset steps for the SH1106.
+*
+* @param oled, pointer to SH1106 that is already initialized 
+*/
+void reset_sh1106(SH1106* oled);
 
 /*
 * @brief Executes the powerup & setup sequence for the SH1106.
@@ -123,24 +130,24 @@ void begin_Adafruit_SH1106(Adafruit_SH1106* ada);
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param ada, Pointing to object that has been initialized.
+* @param oled, Pointing to object that has been initialized.
 */
-void configure_sh1106(Adafruit_SH1106* ada);
+void configure_sh1106(SH1106* oled);
 
 /*
 * @brief Sends a command to the SH1106 via SPI.
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param ada, Pointing to object that has been initialized.
+* @param oled, Pointing to object that has been initialized.
 */
-void send_command_sh1106(Adafruit_SH1106* ada, uint8_t cmd);
+void send_command_sh1106(SH1106* oled, uint8_t cmd);
 
 /*
 * @brief Sends a byte of data to the SH1106 via SPI.
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param ada, Pointing to object that has been initialized.
+* @param oled, Pointing to object that has been initialized.
 */
-void send_data_sh1106(Adafruit_SH1106* ada, uint8_t data);
+void send_data_sh1106(SH1106* oled, uint8_t data);

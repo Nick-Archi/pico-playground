@@ -13,8 +13,8 @@ void static inline dbg()
     while(1){sleep_ms(1000);}
 }
 
-void init_Adafruit_SH1106(
-    Adafruit_SH1106* ada,
+void init_SH1106(
+    SH1106* oled,
     uint8_t dc, 
     uint8_t rst, 
     uint8_t cs,
@@ -22,71 +22,63 @@ void init_Adafruit_SH1106(
     uint8_t clk
 )
 {
-    ada->dc = dc;
-    ada->rst = rst;
-    ada->cs = cs;
-    ada->pico = pico;
-    ada->clk = clk;
-    ada->cs = cs;
-    ada->init = UNINIT;
+    oled->dc = dc;
+    oled->rst = rst;
+    oled->cs = cs;
+    oled->pico = pico;
+    oled->clk = clk;
+    oled->cs = cs;
+    oled->init = UNINIT;
 
     printf("DEBUG0\n");
-    printf("ada->dc = %d\nada->rst = %d\nada->cs = %d\nada->pico = %d\n\
-ada->clk = %d\nada->init = %d\n",\
-ada->dc, ada->rst, ada->cs, ada->pico, ada->clk, ada->init);
+    printf("oled->dc = %d\noled->rst = %d\noled->cs = %d\noled->pico = %d\n\
+oled->clk = %d\noled->init = %d\n",\
+oled->dc, oled->rst, oled->cs, oled->pico, oled->clk, oled->init);
 }
 
-void initialize_spi(Adafruit_SH1106* ada)
+void initialize_spi(SH1106* oled)
 {
-    if(ada->init != UNINIT)
+    if(oled->init != UNINIT)
     {
         printf("Issue During Initialization\n");
         while(1);
     } 
  
     // Reset the SH1106.
-    gpio_init(ada->rst);
-    gpio_set_dir(ada->rst, GPIO_OUT);
+    gpio_init(oled->rst);
+    gpio_set_dir(oled->rst, GPIO_OUT);
     sleep_ms(10); // delay for Vdd to stabilize 
-    gpio_put(ada->rst, 1); 
-    sleep_ms(10); // delay 
-    gpio_put(ada->rst, 0); 
 
     // initialize the CS pin & set pin dir
-    gpio_init(ada->cs);
-    gpio_set_dir(ada->cs, GPIO_OUT);
-    gpio_put(ada->cs, 1); // CS -> high, no communication yet
+    gpio_init(oled->cs);
+    gpio_set_dir(oled->cs, GPIO_OUT);
+    gpio_put(oled->cs, 1); // CS -> high, no communication yet
     
     spi_init(SPI_PORT, BAUD);
     printf("DEBUG: BAUD rate configured to = %d\n", spi_get_baudrate(SPI_PORT)); 
     
     // initialize & config gpio pins 
-    gpio_set_function(ada->pico, GPIO_FUNC_SPI);
-    gpio_set_function(ada->clk, GPIO_FUNC_SPI);
+    gpio_set_function(oled->pico, GPIO_FUNC_SPI);
+    gpio_set_function(oled->clk, GPIO_FUNC_SPI);
 
     // initialize the DC pin & set pin dir
-    gpio_init(ada->dc);
-    gpio_set_dir(ada->dc, GPIO_OUT);
-    gpio_put(ada->dc, 0);
+    gpio_init(oled->dc);
+    gpio_set_dir(oled->dc, GPIO_OUT);
+    gpio_put(oled->dc, 0);
 
-    ada->init = INIT;
+    oled->init = INIT;
 }
 
-void configure_Adafruit_SH1106(Adafruit_SH1106* ada)
+void configure_SH1106(SH1106* oled)
 {
-    if(ada->init != INIT)
+    if(oled->init != INIT)
     {
         printf("Ada struct not initialized\n");
         while(1);
     }
 
     // bring SH1106 out of Reset
-    gpio_put(ada->rst, 1);
-    sleep_ms(10); 
-
-    // send SPI cmd to set display off
-    //gpio_put(ada->dc, 0);
-    //sleep_ms(10);
+    reset_sh1106(oled);
 
     printf("DEBUG: Sending over %d bytes of data via SPI\n",
         sizeof(init_config_steps)/sizeof(uint8_t));
@@ -95,43 +87,57 @@ void configure_Adafruit_SH1106(Adafruit_SH1106* ada)
     for(int i = 0; i < sizeof(init_config_steps)/sizeof(uint8_t); i++)
     {
         printf("DEBUG: Sending over %X\n", init_config_steps[i]);
-        send_command_sh1106(ada, init_config_steps[i]);
+        send_command_sh1106(oled, init_config_steps[i]);
     }
 
     // send over SET_DISPLAY_ON & delay
     uint8_t data = SH1106_DISPLAYON; 
     printf("DEBUG: Sending over %X\n", data);
-    send_command_sh1106(ada, data);
+    send_command_sh1106(oled, data);
     sleep_ms(100);
 dbg();
 }
 
-void begin_Adafruit_SH1106(Adafruit_SH1106* ada)
+void begin_sh1106(SH1106* oled)
 {
     // initialize the SPI pins on pico2
-    initialize_spi(ada);
+    initialize_spi(oled);
     printf("SPI Initialized\n");
 
     // execute the Vdd/Vcc off state -> initial settings configuration steps
-    configure_Adafruit_SH1106(ada);   
+    configure_SH1106(oled);   
 }
 
-void send_command_sh1106(Adafruit_SH1106* ada, uint8_t cmd)
+void reset_sh1106(SH1106* oled)
 {
-    if(ada->init != INIT)
+    if(oled->init != INIT)
+    {
+        printf("Issue w/ Initialization. Not resetting\n");
+        while(1);
+    }
+
+    gpio_put(oled->rst, 0);
+    sleep_ms(10);
+    gpio_put(oled->rst, 1);
+    sleep_ms(10);
+}
+
+void send_command_sh1106(SH1106* oled, uint8_t cmd)
+{
+    if(oled->init != INIT)
     {
         printf("Issue with Initialization. Not sending cmd data\n");
         while(1);
     }
 
-    gpio_put(ada->dc, 0);
-    gpio_put(ada->cs, 0);
+    gpio_put(oled->dc, 0);
+    gpio_put(oled->cs, 0);
     sleep_ms(10);
     spi_write_blocking(SPI_PORT, &cmd, 1);
-    gpio_put(ada->cs, 1);
+    gpio_put(oled->cs, 1);
 }
 
-void send_data_sh1106(Adafruit_SH1106* ada, uint8_t data)
+void send_data_sh1106(SH1106* oled, uint8_t data)
 {
 
 }
@@ -144,9 +150,9 @@ sleep_ms(7000);
 
     printf("DEBUG: Beginning setup\n");
 
-    Adafruit_SH1106 obj;
+    SH1106 obj;
 
-    init_Adafruit_SH1106(
+    init_SH1106(
         &obj,
         POCI,
         RST,
@@ -155,7 +161,7 @@ sleep_ms(7000);
         CLK    
     );
 
-    begin_Adafruit_SH1106(&obj);
+    begin_sh1106(&obj);
 
     return 0;
 }
