@@ -1,4 +1,4 @@
-# I2C Pico Program
+# SPI Pico Program I
 
 ## Table of Content
 [Overview](#overview)<br>
@@ -13,27 +13,29 @@
 ## Overview
 
 An introductory project to get familiar with the basics of:
-- utilizing the i2c functionality of the RP2350
-- interacting with an ADXL345 accelerometer that's connected to the RP2350 
+- utilizing the SPI functionality of the RP2350
+- interacting with the SH1106 OLED from Inland 
 
 ## Objective
 
-[] Read the x, y, & z axis from the ADXL345 accelerometer
+[] Turn on the OLED
+	- Sounds simple but this requires reading whatever documentation I can find on this SH1106
 
 ## Setup
 
 Here's how I setup the GPIO Ports on the Pico2
 
-On ADXL345 Connection:
-SCL -> GP4(pin6)<br>
-SDA -> GP5(pin7)<br>
+On SH1106 Connection:
+GND -> GND(pin 28)<br>
 VCC -> 3V3(OUT, pin 36)<br>
-GND -> GND(pin 38)<br>
-CS -> 3V3(OUT, pin 36)<br>
-SD0 -> GND(pin 38)<br>
+CLK -> GP18(pin24)<br>
+MOSI -> GP19(pin25)<br>
+RES -> GP20(pin26)<br>
+DC -> GP16(pin21)<br>
+CS -> GP17(pin22)<br>
 
 Picture:
-![ADXL345 connected to RP2350](images/ADXL345_connect_2_pico2.jpg)
+![SH1106 connected to RP2350](images/SH1106_with_RP2350.jpg)
 
 ## Building 
 1. Setup & call cmake
@@ -51,18 +53,23 @@ Picture:
     ```
 
 3. Move <project_name>.uf2 onto the pico board connected via USB
-   - Drag and drop the uf2 file OR
+   - Drag and drop the uf2 file OR execute below command
 
     ```
     $ cp ./build/<project_name>.uf2 /media/<user>/RP2350
     ```
 ## Learnings
 
-1. Debug I2C connection
-- Added a small check to ensure that I could talk to the ADXL345. Within the datasheet, it explains how to check the DevID.
+1. Adafruit SH1106 Startup Commands
+- Adafruit has an excellent diagram that showcases the commands to send to the SH1106 to turn on the display. Link below.
 
-2. Single i2c_write_blocking for multiple writes 
-- initially, I was unable to modify targeted registers. I was performing i2c writes using separate i2c_write_blocking calls but I decided to combine them into 1 and instead change the parameter regarding the number of bytes being sent.
+2. Skip electrical diagram
+- I don't think I need to get to deep into the how everything is connected in the electrical diagram. I believe that since the OLED is already manufactured, this can mostly be skipped.
+
+3. Sino Wealth SH1106 Command Listingn
+- Sino Wealth's SH1106 pdf has a section dedicated to the commands you can send to the SH1106. Link below.
+
+4. Adafruit has some code that I followed to get an idea of how to interact with the SH1106. Link below.
 
 ## Useful
 
@@ -73,6 +80,7 @@ Picture:
 
 ## Resources
 
-[I2C Sparkfun Documentation](https://learn.sparkfun.com/tutorials/i2c#i2c-at-the-hardware-level)<br>
-[ADXL345 DataSheet](https://cdn.sparkfun.com/assets/9/1/8/9/9/ADXL345.pdf)<br>
-[ADXL345 Hookup Guide](https://learn.sparkfun.com/tutorials/adxl345-hookup-guide/all)<br>
+[SH1106 Adafruit Product Spec](https://cdn-shop.adafruit.com/product-files/5228/5223-ds.pdf)<br>
+[Adafruit SH1106 Examples](https://github.com/adafruit/Adafruit_SH110x/blob/master/)<br>
+[Micro Center OLED](https://www.microcenter.com/product/643965/inland-iic-spi-13-128x64-oled-v20-graphic-display-module-for-arduino-uno-r3)<br>
+[Sino Wealth SH1106 PDF](https://www.pololu.com/file/0J1813/SH1106.pdf)<br>
