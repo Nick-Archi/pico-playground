@@ -1,0 +1,24 @@
+Tracing my code so far...
+
+...theoretically, program execution will start @ main... in Adafruit_SH1106.c
+[] The Pico2 will be connected to the SPI peripheral (OLED) prior connecting it to USB
+[] Once USB is connected (and assuming the board has already been flashed with the .uf2 file), then start setting up the SPI communication with the Adafruit OLED
+
+[] Intialize the Adafruit_SH1106 object since this will contain the GPIO configuration used throughout
+
+** So I need to make sure that my functions are follwing this order:
+[] Reset the connected OLED by:
+	- setting the RESET pin HIGH, delaying (10ms?)
+	- setting RESET to LOW and delaying
+	- setting RESET to HIGH and delaying 
+	
+[] Initialize SPI communication
+	- set the CS pin HIGH to showcase no communication to chip yet
+	- initialize the reset of the lines used for SPI communication
+	
+*[] Possibly initialize 
+	
+** So far my execution should follow: 
+	- call, init_Adafruit_SH1106
+	- call, initialize_spi(), resets the SH1106 board and sets up SPI
+	- configure_Adafruit_SH1106(), sends commands to startup SH1106
