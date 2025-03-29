@@ -1,8 +1,11 @@
 /*
 * Objective: This file ultimately configures the SH1106 OLED.
 *
-* I'm trying to follow the steps found in the Adafruit_GrayOLED.cpp
+* I analyzed the steps found in the Adafruit_SH110x project: https://github.com/adafruit/Adafruit_SH110x/tree/master
+* 
 */
+
+#include <string.h>
 
 #include "c_Adafruit_SH1106.h"
 #include "SH1106_Commands.h"
@@ -82,7 +85,7 @@ void configure_SH1106(SH1106* oled)
 
     printf("DEBUG: Sending over %d bytes of data via SPI\n",
         sizeof(init_config_steps)/sizeof(uint8_t));
-    sleep_ms(10000);
+    sleep_ms(3000);
     // send data over from array
     for(int i = 0; i < sizeof(init_config_steps)/sizeof(uint8_t); i++)
     {
@@ -94,8 +97,7 @@ void configure_SH1106(SH1106* oled)
     uint8_t data = SH1106_DISPLAYON; 
     printf("DEBUG: Sending over %X\n", data);
     send_command_sh1106(oled, data);
-    sleep_ms(100);
-dbg();
+    sleep_ms(500);
 }
 
 void begin_sh1106(SH1106* oled)
@@ -130,7 +132,7 @@ void send_command_sh1106(SH1106* oled, uint8_t cmd)
         while(1);
     }
 
-    gpio_put(oled->dc, 0);
+    gpio_put(oled->dc, 0); // Cmd mode
     gpio_put(oled->cs, 0);
     sleep_ms(10);
     spi_write_blocking(SPI_PORT, &cmd, 1);
@@ -139,14 +141,54 @@ void send_command_sh1106(SH1106* oled, uint8_t cmd)
 
 void send_data_sh1106(SH1106* oled, uint8_t data)
 {
+    if(oled->init != INIT)
+    {
+        printf("Issue with Initialization. Not sending data\n");
+        while(1);
+    }
 
+    gpio_put(oled->dc, 1); // Data mode
+    gpio_put(oled->cs, 0);
+    sleep_ms(10);
+    spi_write_blocking(SPI_PORT, &data, 1);
+    gpio_put(oled->cs, 1);
+}
+
+void update_sh1106(SH1106* oled)
+{
+    // update each page
+    for(uint8_t page = 0; page < 8; page++)
+    {
+        send_command_sh1106(oled, SH1106_PAGE_OFFSET(page));
+        set_column_address(oled, 0);
+
+        // write each byte in that page to OLED
+        for(uint8_t i = 0; i < WIDTH; i++)
+        {
+            /*
+            * This is performing a type of offset. Think of it as
+            * addressing a 2D array as a 1D vector.
+            * ex) page = 1, i = 0, [1 * 128 + 0], access buffer[128] -
+            * buffer[256], that's 128 bytes for page 1...
+            */
+            send_data_sh1106(oled, buffer[page * WIDTH + i]);
+        }
+    }
+}
+
+void set_column_address(SH1106* oled, uint8_t col)
+{
+    //[TODO] This part is absolute magic to me and I don't fully understand yet
+    col += 2;
+    send_command_sh1106(oled, (0x10 | (col >> 4)));     
+    send_command_sh1106(oled, (0x00 | (col & 0x0F)));     
 }
 
 int main()
 {
     // initialize I/O (UART, USB, etc.)
     stdio_init_all();
-sleep_ms(7000);
+sleep_ms(2000);
 
     printf("DEBUG: Beginning setup\n");
 
@@ -163,5 +205,14 @@ sleep_ms(7000);
 
     begin_sh1106(&obj);
 
+    // set buffer to all 0xFF
+    memset(buffer, 0x00, sizeof(buffer));
+
+    update_sh1106(&obj);
+    
+    // set buffer to all 0xFF
+    memset(buffer, 0xFF, sizeof(buffer));
+    update_sh1106(&obj);
+dbg();
     return 0;
 }

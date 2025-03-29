@@ -1,24 +1,7 @@
-/*********************************************************************
-This is a library for our Monochrome OLEDs based on SSD1306 drivers
-
-  Pick one up today in the adafruit shop!
-  ------> http://www.adafruit.com/category/63_98
-
-These displays use SPI to communicate, 4 or 5 pins are required to  
-interface
-
-Adafruit invests time and resources providing this open source code, 
-please support Adafruit and open-source hardware by purchasing 
-products from Adafruit!
-
-Written by Limor Fried/Ladyada  for Adafruit Industries.  
-BSD license, check license.txt for more information
-All text above, and the splash screen must be included in any redistribution
-*********************************************************************/
-
 /*
-This is my attempt at converting the Adafruit_SH1106.h file obtained from:
-into an equivelent header file for C purposes
+* Description:
+* Header file for SH1106 initialization and usage.
+* 
 */
 
 #include <stdio.h>
@@ -32,9 +15,11 @@ into an equivelent header file for C purposes
 #define SH1106_128_64
 
 #if defined SH1106_128_64
-  #define SH1106_LCDWIDTH                  128
-  #define SH1106_LCDHEIGHT                 64
+  #define WIDTH                  128
+  #define HEIGHT                 64
 #endif
+
+uint8_t buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
 
 // SPI Configuration for Raspberry Pi RP2350
 #define PICO    PICO_DEFAULT_SPI_TX_PIN
@@ -140,6 +125,7 @@ void configure_sh1106(SH1106* oled);
 * Pre-reqs: initialized SPI communication
 *
 * @param oled, Pointing to object that has been initialized.
+* @param cmd, byte to be sent to OLED as command.
 */
 void send_command_sh1106(SH1106* oled, uint8_t cmd);
 
@@ -149,5 +135,25 @@ void send_command_sh1106(SH1106* oled, uint8_t cmd);
 * Pre-reqs: initialized SPI communication
 *
 * @param oled, Pointing to object that has been initialized.
+* @param data, byte to be sent to OLED as data.
 */
 void send_data_sh1106(SH1106* oled, uint8_t data);
+
+/*
+* @brief Send buffer data to OLED to update the display 
+*
+* Pre-reqs: initialized SPI communication
+*
+* @param oled, Pointing to object that has been initialized.
+*/
+void update_sh1106(SH1106* oled);
+
+/*
+* @brief Set the lower & upper column addresses 
+*
+* For more information, read the section on The Column Address pg 15
+* in the Sino Wealth SH1106 pdf
+*
+* @param col, Column between (0 - 127).
+*/
+void set_column_address(SH1106* oled, uint8_t col);

@@ -28,6 +28,9 @@
 #define SH1106_NORMALINVDISPL       0xA6
 #define SH1106_DISPLAYON            0xAF
 
+#define SH1106_PAGE0                0xB0
+#define SH1106_PAGE_OFFSET(x)       (SH1106_PAGE0 + x)
+
 const uint8_t init_config_steps[] =
 {
     SH1106_DISPLAYOFF, 
