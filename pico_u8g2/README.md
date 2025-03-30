@@ -61,16 +61,21 @@ Picture:
     ```
 ## Learnings
 
-1. Adafruit SH1106 Startup Commands
-- Adafruit has an excellent diagram that showcases the commands to send to the SH1106 to turn on the display. Link below.
+1. Building & Installing u8g2 library
+```
+	[] navigate to the u8g2 submodule and execute
+	$ mkdir build && cd build && cmake .. && make install
+	** The submodule has to be initialized prior!
+```
 
-2. Skip electrical diagram
-- I don't think I need to get to deep into the how everything is connected in the electrical diagram. I believe that since the OLED is already manufactured, this can mostly be skipped.
-
-3. Sino Wealth SH1106 Command Listingn
-- Sino Wealth's SH1106 pdf has a section dedicated to the commands you can send to the SH1106. Link below.
-
-4. Adafruit has some code that I followed to get an idea of how to interact with the SH1106. Link below.
+2. Uinstalling u8g2 from system
+```
+	[] Locate the u8g2 files in /usr/local/
+	$ sudo grep -rn "u8g2" /usr/local/
+	$ sudo find /usr/local/ -name "*u8g2*"
+	
+	[] Remove the files with 'rm -rf'
+```
 
 ## Useful
 
