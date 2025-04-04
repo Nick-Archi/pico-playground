@@ -8,6 +8,8 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 
+#include <u8g2/u8g2.h>
+
 /*
 * SH1106 Display settings
 * I am only using a 128x64 display for now
@@ -67,7 +69,6 @@ typedef struct SH1106_t
 * @return SH1106*, pointer to object
 */
 void init_SH1106(
-    SH1106* oled,
     uint8_t dc, 
     uint8_t rst, 
     uint8_t cs,
@@ -81,11 +82,9 @@ void init_SH1106(
 * Configures SPI and utilizes the SH1106 object
 * to initialize and configure the GPIO pins on the Pico2
 *
-* @param SH1106* oled, pointer to object that is initialized
-*
 * @return void
 */
-void initialize_spi(SH1106* oled);
+void initialize_spi();
 
 /*
 * @brief Runs the power-up sequence for the SH1106.
@@ -101,9 +100,8 @@ void begin_sh1106(SH1106* oled);
 /*
 * @brief Executes reset steps for the SH1106.
 *
-* @param oled, pointer to SH1106 that is already initialized 
 */
-void reset_sh1106(SH1106* oled);
+void reset_sh1106();
 
 /*
 * @brief Executes the powerup & setup sequence for the SH1106.
@@ -113,9 +111,8 @@ void reset_sh1106(SH1106* oled);
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param oled, Pointing to object that has been initialized.
 */
-void configure_sh1106(SH1106* oled);
+void configure_sh1106();
 
 /*
 * @brief Sends a command to the SH1106 via SPI.
@@ -155,3 +152,7 @@ void update_sh1106(SH1106* oled, uint8_t* buffer);
 * @param col, Column between (0 - 127).
 */
 void set_column_address(SH1106* oled, uint8_t col);
+
+uint8_t u8x8_gpio_n_delay(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr);
+
+uint8_t u8x8_spi_send_data(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr);

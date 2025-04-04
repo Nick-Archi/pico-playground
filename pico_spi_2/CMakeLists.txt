@@ -5,12 +5,20 @@ set(PICO_PLATFORM "rp2350-arm-s" CACHE STRING "Targeting pico 2350 specifically 
 set(SOURCE_DIR "src/")
 set(EXEC1_NAME "spi_stuff") 
 
+set(PICO_COMPILER "pico_arm_cortex_m33_gcc")
+
 # initialize the SDK based on PICO_SDK_PATH
 # note: this happens before the project()
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 # search for the u8g2 library's cmake file
 find_package(u8g2 REQUIRED PATHS /usr/local/cmake/u8g2)
+
+#setup tool chain for PICO usage
+#set(CMAKE_TOOLCHAIN_FILE $ENV{PICO_SDK_PATH}/external/
+
+# add directory for u8g2 compilation
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/u8g2)
 
 project(my_project)
 

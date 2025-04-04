@@ -60,19 +60,28 @@ Picture:
     $ cp ./build/<project_name>.uf2 /media/<user>/RP2350
     ```
 ## Learnings
+1. Modifying the u8g2 CMakeLists.txt
+```
+	[] The u8g2 object files need to be compiled with ARM's compiler (specifically the RP2350's)
+	[] Added this line the u8g2/CMakeLists.txt to load the arm cortex m33's toolchain
+	** The submodule has to be initialized prior!
+	set(CMAKE_TOOLCHAIN_FILE $ENV{PICO_SDK_PATH}/cmake/preload/toolchains/pico_arm_cortex_m33_gcc.cmake)
+	[] This will add the correct tools for building u8g2 to run on an ARM Cortex M33
+```
 
-1. Building & Installing u8g2 library
+2. Building & Installing u8g2 library
 ```
 	[] navigate to the u8g2 submodule and execute
 	$ mkdir build && cd build && cmake .. && make install
-	** The submodule has to be initialized prior!
 ```
 
-2. Uinstalling u8g2 from system
+3. Uinstalling u8g2 from system
 ```
 	[] Locate the u8g2 files in /usr/local/
 	$ sudo grep -rn "u8g2" /usr/local/
 	$ sudo find /usr/local/ -name "*u8g2*"
+	
+	[] There's a .a static library built in /usr/local/lib
 	
 	[] Remove the files with 'rm -rf'
 ```
@@ -83,10 +92,15 @@ Picture:
     ```
     $ watch -n 1 "sudo dmesg | tail -n 20"
     ```
+    
+- View how an object file was built (which compiler was used)
+	```
+	$ objdump -a <.o/obj file>
+	```
 
 ## Resources
 
-[U8G2 Library Repo](https://github.com/olikraus/u8g2)
+[U8G2 Library Repo](https://github.com/olikraus/u8g2)<br>
 [SH1106 Adafruit Product Spec](https://cdn-shop.adafruit.com/product-files/5228/5223-ds.pdf)<br>
 [Adafruit SH1106 Examples](https://github.com/adafruit/Adafruit_SH110x/blob/master/)<br>
 [Micro Center OLED](https://www.microcenter.com/product/643965/inland-iic-spi-13-128x64-oled-v20-graphic-display-module-for-arduino-uno-r3)<br>

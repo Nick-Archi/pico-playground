@@ -15,6 +15,10 @@
 
 uint8_t g_buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
 
+SH1106 oled;
+
+u8g2_t u8g2;
+
 void static inline dbg()
 {
     printf("ENTERING DEBUG\n");
@@ -29,10 +33,9 @@ sleep_ms(2000);
 
     printf("DEBUG: Beginning setup\n");
 
-    SH1106 obj;
+    extern SH1106 oled;
 
     init_SH1106(
-        &obj,
         POCI,
         RST,
         CS,
@@ -40,16 +43,15 @@ sleep_ms(2000);
         CLK    
     );
 
-    begin_sh1106(&obj);
+    initialize_spi();
+    configure_sh1106();
 
-    // set buffer to all 0xFF
-    memset(g_buffer, 0x00, sizeof(g_buffer));
+    u8g2_Setup_sh1106_128x64_noname_f(
+        &u8g2,
+        U8G2_R0,
+        u8x8_spi_send_data,
+        u8x8_gpio_n_delay); 
 
-    update_sh1106(&obj, g_buffer);
-    
-    // set buffer to all 0xFF
-    memset(g_buffer, 0xFF, sizeof(g_buffer));
-    update_sh1106(&obj, g_buffer);
 dbg();
     return 0;
 }

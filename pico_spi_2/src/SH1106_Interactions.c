@@ -10,6 +10,8 @@
 #include "SH1106_Interactions.h"
 #include "SH1106_Commands.h"
 
+extern SH1106 oled;
+
 void static inline dbg()
 {
     printf("ENTERING DEBUG\n");
@@ -17,7 +19,6 @@ void static inline dbg()
 }
 
 void init_SH1106(
-    SH1106* oled,
     uint8_t dc, 
     uint8_t rst, 
     uint8_t cs,
@@ -25,63 +26,63 @@ void init_SH1106(
     uint8_t clk
 )
 {
-    oled->dc = dc;
-    oled->rst = rst;
-    oled->cs = cs;
-    oled->pico = pico;
-    oled->clk = clk;
-    oled->cs = cs;
-    oled->init = UNINIT;
+    oled.dc = dc;
+    oled.rst = rst;
+    oled.cs = cs;
+    oled.pico = pico;
+    oled.clk = clk;
+    oled.cs = cs;
+    oled.init = UNINIT;
 
     printf("DEBUG0\n");
     printf("oled->dc = %d\noled->rst = %d\noled->cs = %d\noled->pico = %d\n\
 oled->clk = %d\noled->init = %d\n",\
-oled->dc, oled->rst, oled->cs, oled->pico, oled->clk, oled->init);
+oled.dc, oled.rst, oled.cs, oled.pico, oled.clk, oled.init);
 }
 
-void initialize_spi(SH1106* oled)
+void initialize_spi()
 {
-    if(oled->init != UNINIT)
+    if(oled.init != UNINIT)
     {
         printf("Issue During Initialization\n");
         while(1);
     } 
  
     // Reset the SH1106.
-    gpio_init(oled->rst);
-    gpio_set_dir(oled->rst, GPIO_OUT);
+    gpio_init(oled.rst);
+    gpio_set_dir(oled.rst, GPIO_OUT);
     sleep_ms(10); // delay for Vdd to stabilize 
 
     // initialize the CS pin & set pin dir
-    gpio_init(oled->cs);
-    gpio_set_dir(oled->cs, GPIO_OUT);
-    gpio_put(oled->cs, 1); // CS -> high, no communication yet
+    gpio_init(oled.cs);
+    gpio_set_dir(oled.cs, GPIO_OUT);
+    gpio_put(oled.cs, 1); // CS -> high, no communication yet
     
     spi_init(SPI_PORT, BAUD);
     printf("DEBUG: BAUD rate configured to = %d\n", spi_get_baudrate(SPI_PORT)); 
     
     // initialize & config gpio pins 
-    gpio_set_function(oled->pico, GPIO_FUNC_SPI);
-    gpio_set_function(oled->clk, GPIO_FUNC_SPI);
+    gpio_set_function(oled.pico, GPIO_FUNC_SPI);
+    gpio_set_function(oled.clk, GPIO_FUNC_SPI);
 
     // initialize the DC pin & set pin dir
-    gpio_init(oled->dc);
-    gpio_set_dir(oled->dc, GPIO_OUT);
-    gpio_put(oled->dc, 0);
+    gpio_init(oled.dc);
+    gpio_set_dir(oled.dc, GPIO_OUT);
+    gpio_put(oled.dc, 0);
 
-    oled->init = INIT;
+    oled.init = INIT;
 }
 
-void configure_SH1106(SH1106* oled)
+void configure_sh1106()
 {
-    if(oled->init != INIT)
+    if(oled.init != INIT)
     {
         printf("Ada struct not initialized\n");
         while(1);
     }
 
     // bring SH1106 out of Reset
-    reset_sh1106(oled);
+    reset_sh1106();
 
     printf("DEBUG: Sending over %d bytes of data via SPI\n",
         sizeof(init_config_steps)/sizeof(uint8_t));
@@ -90,37 +91,28 @@ void configure_SH1106(SH1106* oled)
     for(int i = 0; i < sizeof(init_config_steps)/sizeof(uint8_t); i++)
     {
         printf("DEBUG: Sending over %X\n", init_config_steps[i]);
-        send_command_sh1106(oled, init_config_steps[i]);
+        send_command_sh1106(&oled, init_config_steps[i]);
     }
 
     // send over SET_DISPLAY_ON & delay
     uint8_t data = SH1106_DISPLAYON; 
     printf("DEBUG: Sending over %X\n", data);
-    send_command_sh1106(oled, data);
+    send_command_sh1106(&oled, data);
     sleep_ms(500);
 }
 
-void begin_sh1106(SH1106* oled)
-{
-    // initialize the SPI pins on pico2
-    initialize_spi(oled);
-    printf("SPI Initialized\n");
 
-    // execute the Vdd/Vcc off state -> initial settings configuration steps
-    configure_SH1106(oled);   
-}
-
-void reset_sh1106(SH1106* oled)
+void reset_sh1106()
 {
-    if(oled->init != INIT)
+    if(oled.init != INIT)
     {
         printf("Issue w/ Initialization. Not resetting\n");
         while(1);
     }
 
-    gpio_put(oled->rst, 0);
+    gpio_put(oled.rst, 0);
     sleep_ms(10);
-    gpio_put(oled->rst, 1);
+    gpio_put(oled.rst, 1);
     sleep_ms(10);
 }
 
@@ -139,47 +131,79 @@ void send_command_sh1106(SH1106* oled, uint8_t cmd)
     gpio_put(oled->cs, 1);
 }
 
-void send_data_sh1106(SH1106* oled, uint8_t data)
+//void send_data_sh1106(SH1106* oled, uint8_t data)
+//{
+//    if(oled->init != INIT)
+//    {
+//        printf("Issue with Initialization. Not sending data\n");
+//        while(1);
+//    }
+//
+//    gpio_put(oled->dc, 1); // Data mode
+//    gpio_put(oled->cs, 0);
+//    sleep_ms(10);
+//    spi_write_blocking(SPI_PORT, &data, 1);
+//    gpio_put(oled->cs, 1);
+//}
+
+//void update_sh1106(SH1106* oled, uint8_t* buffer)
+//{
+//    // update each page
+//    for(uint8_t page = 0; page < 8; page++)
+//    {
+//        send_command_sh1106(oled, SH1106_PAGE_OFFSET(page));
+//        set_column_address(oled, 0);
+//
+//        // write each byte in that page to OLED
+//        for(uint8_t i = 0; i < WIDTH; i++)
+//        {
+//            /*
+//            * This is performing a type of offset. Think of it as
+//            * addressing a 2D array as a 1D vector.
+//            * ex) page = 1, i = 0, [1 * 128 + 0], access buffer[128] -
+//            * buffer[256], that's 128 bytes for page 1...
+//            */
+//            send_data_sh1106(oled, buffer[page * WIDTH + i]);
+//        }
+//    }
+//}
+
+//void set_column_address(SH1106* oled, uint8_t col)
+//{
+//    //[TODO] This part is absolute magic to me and I don't fully understand yet
+//    col += 2;
+//    send_command_sh1106(oled, (0x10 | (col >> 4)));     
+//    send_command_sh1106(oled, (0x00 | (col & 0x0F)));     
+//}
+
+uint8_t u8x8_gpio_n_delay(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr)
 {
-    if(oled->init != INIT)
+    switch(msg)
     {
-        printf("Issue with Initialization. Not sending data\n");
-        while(1);
+        case U8X8_MSG_GPIO_CS:
+            gpio_put(oled.cs, arg_int);
+            break;
+        case U8X8_MSG_GPIO_DC:
+            gpio_put(oled.dc, arg_int);
+            break;
+        case U8X8_MSG_GPIO_RESET:
+            gpio_put(oled.rst, arg_int);
+            break;
+        default:
+            break;
     }
 
-    gpio_put(oled->dc, 1); // Data mode
-    gpio_put(oled->cs, 0);
     sleep_ms(10);
-    spi_write_blocking(SPI_PORT, &data, 1);
-    gpio_put(oled->cs, 1);
+    return 0;
 }
 
-void update_sh1106(SH1106* oled, uint8_t* buffer)
+uint8_t u8x8_spi_send_data(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr)
 {
-    // update each page
-    for(uint8_t page = 0; page < 8; page++)
+    uint8_t* data;
+    switch(msg)
     {
-        send_command_sh1106(oled, SH1106_PAGE_OFFSET(page));
-        set_column_address(oled, 0);
-
-        // write each byte in that page to OLED
-        for(uint8_t i = 0; i < WIDTH; i++)
-        {
-            /*
-            * This is performing a type of offset. Think of it as
-            * addressing a 2D array as a 1D vector.
-            * ex) page = 1, i = 0, [1 * 128 + 0], access buffer[128] -
-            * buffer[256], that's 128 bytes for page 1...
-            */
-            send_data_sh1106(oled, buffer[page * WIDTH + i]);
-        }
+        case U8X8_MSG_BYTE_SEND: 
+            data = (uint8_t *)arg_ptr;
+            spi_write_blocking(SPI_PORT, data, 1);
     }
-}
-
-void set_column_address(SH1106* oled, uint8_t col)
-{
-    //[TODO] This part is absolute magic to me and I don't fully understand yet
-    col += 2;
-    send_command_sh1106(oled, (0x10 | (col >> 4)));     
-    send_command_sh1106(oled, (0x00 | (col & 0x0F)));     
 }

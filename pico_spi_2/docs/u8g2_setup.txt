@@ -1,0 +1,24 @@
+My Notes on setting up & utilizing u8g2 in my SPI project
+
+Links:
+[] U8g2 Tutorial: https://github.com/olikraus/u8g2/wiki/setup_tutorial
+[] u8g2setupc: https://github.com/olikraus/u8g2/wiki/u8g2setupc
+	-- there are introduction steps for setting up a C project
+	-- this is the setup function I will try to use: u8g2_Setup_sh1106_128x64_noname_f(u8g2, rotation, u8x8_byte_4wire_sw_spi, uC specific) [full framebuffer, size = 1024 bytes]
+		-- u8g2/csrc/u8g2.h:758:void u8g2_Setup_sh1106_128x64_noname_f(u8g2_t *u8g2, const u8g2_cb_t *rotation, u8x8_msg_cb byte_cb, u8x8_msg_cb gpio_and_delay_cb);
+
+
+Notes regarding u8g2_Setup_sh1106_128x64_noname_f parameters:
+[] u8g2 -> structure for u8g2 definitions
+[] rotation -> Macro defintion defining the orientation of the OLED
+[] u8x8_msg_cb -> function pointer to send message via SPI
+	-- u8g2/csrc/u8x8.h:215:typedef uint8_t (*u8x8_msg_cb)(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr);
+	-- examples @: 
+		-- u8g2/csrc/u8x8.h:705:uint8_t u8x8_byte_sw_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr);
+		-- u8g2/csrc/u8x8_byte.c:578:uint8_t u8x8_byte_sw_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+
+[] u8x8_msg_cb -> function pointer to control GPIO pins for CS, DC, and RST
+
+[] There's some code that you can follow that I think will give you an idea of what to do?
+	-- u8g2/csrc/u8x8_byte.c:107:uint8_t u8x8_byte_4wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+
