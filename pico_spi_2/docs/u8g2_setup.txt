@@ -22,3 +22,159 @@ Notes regarding u8g2_Setup_sh1106_128x64_noname_f parameters:
 [] There's some code that you can follow that I think will give you an idea of what to do?
 	-- u8g2/csrc/u8x8_byte.c:107:uint8_t u8x8_byte_4wire_sw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
 
+
+[] I tried calling my functions to initialize the SPI configuration and then the SH1106. Afterwards calling u8g2_Setup_sh1106_128x64_noname_f(), u8g2_ClearBuffer(), u8g2_DrawStr(), and u8g2_SendBuffer, but nothing appears on the screen. 
+	-- Trying to trace what's going on in the line of execution....
+
+Type Notes:	
+[] u8g2_t(typedef struct u8g2_struct) is defined in, u8g2/csrc/u8g2.h:219
+[] u8x8_t is defined in, u8g2/csrc/u8x8.h:211
+	
+[] u8g2_Setup_sh1106_128x64_noname_f(), u8g2/csrc/u8g2_d_setup.c:662
+{
+// inside u8g2_Setup_sh1106_128x64_noname_f()
+-- allocates uint8_t tile_buf_height & uint8_t* buf
+-- calls u8g2_SetupDisplay(u8g2, u8x8_d_sh1106_128x64_noname, u8x8_cad_001, byte_cb, gp     io_and_delay_cb);
+
+	-- u8g2_SetupDisplay seems to be a macro for u8x8_Setup() see u8g2/csrc/u8g2.h:402
+	*** NOTE, #define u8g2_SetupDisplay(u8g2, display_cb, cad_cb, byte_cb, gpio_and_delay_cb) \ u8x8_Setup(u8g2_GetU8x8(u8g2), (display_cb), (cad_cb), (byte_cb), (gpio_and_deay_cb))
+	*** u8g2_GetU8x8(), u8g2/csrc/u8g2.h:388, will cast the u8g2 into a (u8x8_t*)
+		*** u8g2_t does have a u8x8_t defined as the first variable...so I guess this works fine...
+		
+	-- u8g2/csrc/u8x8_setup.c:133:void u8x8_Setup(u8x8_t *u8x8, u8x8_msg_cb display_cb, u8x8_msg_cb cad_cb, u8x8_msg_cb byte_cb, u8x8_msg_cb gpio_and_delay_cb)
+	{
+		// inside call to u8g2_SetupDisplay() {u8x8_Setup()}
+		-- calls u8x8_SetupDefaults(), u8g2/csrc/u8x8_setup.c:95
+		{
+			// inside u8x8_SetupDefaults()
+			-- seems to just assign default values to the u8x8(u8g2) struct
+		} // exit u8x8_SetupDefaults()
+		
+		-- overwrites some of the defaulted values in the u8x8 struct
+		
+		-- calls u8x8_SetupMemory(), u8g2/csrc/u8x8_display.c:93
+		{
+			// inside u8x8_SetupMemory
+			-- this seems to call u8x8->display_cb(u8x8, U8X8_MSG_DISPLAY_SETUP_MEMORY, 0, NULL);
+			-- calling a function pointer (func) to setup the memory for the display?
+			-- so because u8x8->display_cb will be pointing to this function, u8x8_d_sh1106_128x64_noname, call it...
+			{
+				// inside u8x8_d_sh1106_128x64_noname, u8g2/csrc/u8x8_d_ssd1306_128x64_n
+oname.c:479
+				-- case for U8X8_MSG_DISPLAY_SETUP_MEMORY
+				-- call u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sh1106_128x64_noname_display_info);
+					-- u8x8_sh1106_128x64_noname_display_info: u8g2/csrc/u8x8_d_ssd1306_128x64_noname.c:455:static const u8x8_display_info_t u8x8_sh1106_128x64_noname_display_info =
+				-- u8x8_d_helper_display_setup_memory() defined u8g2/csrc/u8x8.h:436 & u8g2/csrc/u8x8_display.c:52
+				{
+					// inside u8x8_d_helper_display_setup_memory()
+					** so I'm pretty confused by which u8x8_d_helper_display_setup_memory() will be called
+					** b/c there's so many defined I'm going to assume that it's the one in u8g2/csrc/u8x8_d_ssd1306_128x64_noname.c
+						***** Why is the ssh1106 using this ssd1306 is beyond my understanding rn
+						
+					-- set's u8x8->display_info and u8x8->x_offset
+				} // end u8x8_d_helper_display_setup_memory()
+			} // end u8x8?d_sh1106_128x64_noname
+		}// end u8x8_SetupMemory
+	} // end of SetupDisplay {u8x8_Setup}
+	
+	-- u8g2/csrc/u8g2_d_setup.c:667, call u8g2_m_16_8_f(&tile_buf_height);
+	{
+		// entering u8g2/csrc/u8g2_d_memory.c:61
+		-- this seems to assign the allocation for the buffer 
+	} //exit 
+	
+	-- call u8g2_SetupBuffer(u8g2, buf, tile_buf_height, u8g2_ll_hvline_vertical_top_lsb,rotation)
+	-- defined @ u8g2/csrc/u8g2.h:461 & u8g2/csrc/u8g2_setup.c:71
+	{
+		// inside u8g2_SetupBuffer
+		-- this seems to setup the rest of the u8g2 struct
+		** the buffer that was allocated previously in u8g2_m_16_8_f() is assigned to the u8g2 struct
+	} // exit u8g2_SetupBuffer
+	
+} // end of u8g2_Setup_sh1106_128x64_noname_f()
+
+-- executing u8g2_ClearBuffer(&u8g2)
+-- defined @ u8g2/csrc/u8g2.h:1728 implemented @ u8g2/csrc/u8g2_buffer.c:40
+{
+	// inside u8g2_ClearBuffer
+	-- using memset to clear the u8g2.tile_buf_ptr
+} // exit u8g2_ClearBuffer
+
+-- executing u8g2_DrawStr();
+-- defined @ u8g2/csrc/u8g2.h:1912 implemented @ u8g2/csrc/u8g2_font.c:1039
+{
+	// inside u8g2_DrawStr()
+	-- asigns u8g2->u8x8.next_cb to u8x8_ascii_next
+		-- u8x8_ascii_next is defined @ u8g2/csrc/u8x8.h:1073 & implemented @ u8g2/csrc/u8x8_8x8.c:290
+
+	-- calls u8g2_draw_string(u8g2, x, y, str);
+	u8g2_draw_string defined @ implemented @ u8g2/csrc/u8g2_font.c:967
+	{
+		// entering u8g2_draw_string
+		-- sets up some variables
+		-- calls u8x8_utf8_init(u8g2_GetU8x8(u8g2));
+		-- u8x8_utf8_init() defined @ implemented @ u8g2/csrc/u8x8_8x8.c:285
+		{
+			// entering u8x8_utf8_init
+			-- sets u8x8->utf8_state to 0
+		} // exiting u8x8_utf8_init
+		
+		-- enter for loop
+		-- call u8g2->u8x8.next_cb which points to u8x8_ascii_next()
+		{
+			// enter u8g2->u8x8.next_cb
+			[TODO] Investigate?
+		} // exit u8x8_ascii_next()
+		
+		-- break if the return was new line?
+		-- otherwise increment the pointer to move to next char
+		
+		-- if the return (e) doesn't equal 0x0fffe then...
+		-- call u8g2_DrawGlyph(u8g2, x, y, e)
+			-- u8g2_DrawGlyph defined @ u8g2/csrc/u8g2.h:1905 implemented @ u8g2/csrc/u8g2_font.c:936
+		{
+			[TODO] explore?
+			
+			-- calls u8g2_font_draw_glyph
+			-- u8g2_font_draw_glyph defined @ implemented @ u8g2/csrc/u8g2_font.c:869
+			{
+			
+			} // exit u8g2_font_draw_glyph
+		} // exit u8g2_DrawGlyph
+		
+		[TODO] I don't want to explore this...
+	} // exiting u8g2_draw_string
+	
+} // exit u8g2_DrawStr
+
+-- call u8g2_SendBuffer(&u8g2)
+-- defined @ u8g2/csrc/u8g2.h:1727 implemented @ u8g2/csrc/u8g2_buffer.c:93
+{
+	// entering u8g2_SendBuffer
+	-- call u8g2_send_buffer(u8g2)
+	-- defined @ implemented @ u8g2/csrc/u8g2_buffer.c:72
+	{
+		// entering u8g2_send_buffer
+		-- set variables & call u8g2_GetU8x8()
+		-- eventually call u8x8_DrawTile(u8g2_GetU8x8(u8g2), 0, dest_tile_row, w, ptr)
+			-- u8x8_DrawTile defined @ implemented @ u8g2/csrc/u8x8_display.c:82
+			{
+			
+			} // exit u8x8_DrawTile
+		[TODO] possibly explore this? 
+	} // exiting u8g2_send_buffer
+	
+	-- call u8x8_RefreshDisplay(u8g2_GetU8x8(u8g2))
+	-- defined @ implemented @ u8g2/csrc/u8x8_display.c:156
+	{
+		// entering u8x8_RefreshDisplay
+		-- call u8x8->display_cb(u8x8, U8X8_MSG_DISPLAY_REFRESH, 0, NULL)
+- so because u8x8->display_cb will be pointing to this function, u8x8_d_sh1106_128x64_noname, call it...
+		{
+			// inside u8x8_d_sh1106_128x64_noname, u8g2/csrc/u8x8_d_ssd1306_128x64_noname.c:479	
+		} // exit u8x8_d_sh1106_128x64_noname	
+	} // exit u8x8_ReferestDisplay
+	
+} // exiting u8g2_SendBuffer
+
+[] 4/4/25, this tracing is near impossible...I either have to take another approach or find a way to run a debugger attached

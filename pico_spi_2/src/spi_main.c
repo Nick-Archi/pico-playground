@@ -13,8 +13,6 @@
 #include "SH1106_Interactions.h"
 #include <u8g2/u8g2.h>
 
-uint8_t g_buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
-
 SH1106 oled;
 
 u8g2_t u8g2;
@@ -52,6 +50,28 @@ sleep_ms(2000);
         u8x8_spi_send_data,
         u8x8_gpio_n_delay); 
 
+// print out some info from the structs passed in to see if anything is being done...
+{
+    printf("u8g2.tile_buf_height = %d\n", u8g2.tile_buf_height);
+    printf("u8g2.u8x8.display_info->tile_width = %d\n", u8g2.u8x8.display_info->tile_width);
+    printf("address of u8g2 buffer = %p\n", u8g2.tile_buf_ptr);
+    printf("printing contents of the buffer\n");
+    u8g2.tile_buf_ptr[0] = 0xDE;
+    u8g2.tile_buf_ptr[1023] = 0xAD;
+    /*for(int i = 0; i < u8g2.tile_buf_height; i++)
+    {
+        printf("Row %d: ", i);
+        for(int j = 0; j < (u8g2.u8x8.display_info->tile_width * 8); j++)
+        {
+            printf("%d, ", *(u8g2.tile_buf_ptr + (i * u8g2.pixel_buf_width) + j));
+        }
+        printf("\n");
+    }*/
+}
+    u8g2_ClearBuffer(&u8g2);
+    u8g2_DrawStr(&u8g2, 0, 20, "HELLO\n");
+    u8g2_SendBuffer(&u8g2);
 dbg();
+
     return 0;
 }

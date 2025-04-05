@@ -178,6 +178,7 @@ void send_command_sh1106(SH1106* oled, uint8_t cmd)
 
 uint8_t u8x8_gpio_n_delay(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr)
 {
+printf("DEBUG: %s\n", __func__);
     switch(msg)
     {
         case U8X8_MSG_GPIO_CS:
@@ -199,6 +200,8 @@ uint8_t u8x8_gpio_n_delay(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_
 
 uint8_t u8x8_spi_send_data(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr)
 {
+printf("DEBUG: %s\n", __func__);
+printf("DEBUG: %d\n", msg);
     uint8_t* data;
     switch(msg)
     {
