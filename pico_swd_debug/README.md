@@ -47,7 +47,7 @@ RP2350 to Components
 
 
 Picture of connections:<br>
-![RPi4 connected to RP2350](images/swd_gpio_connections_4.jpg)
+![RPi4 connected to RP2350](images/swd_gpio_connections_3.jpg)
 
 ## Install
 - [ ] Prior to Building OpenOCD, ensure these packages are installed: linuxgpiod, gpiod, libgpiod-dev, libtool<br>
