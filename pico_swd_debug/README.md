@@ -87,8 +87,7 @@ $ cp ./raspberrypi-swd.cfg <openocd_installation_dir>/scripts/interface/
 ```
 -- OR copy from the pico-vscode/scripts/raspberrypi-swd.cfg [link](https://github.com/raspberrypi/pico-vscode/blob/main/scripts/raspberrypi-swd.cfg)<br>
 
-- Startup OpenOCD Server at localhost:3333<br>
-    # this is the default for OpenOCD, I believe you can modify the port it lives at
+- Startup OpenOCD Server<br>
 ```
 sudo openocd -d -f interface/raspberrypi-swd.cfg -f target/rp2350.cfg
 ```
