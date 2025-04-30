@@ -46,7 +46,7 @@ RP2350 to Components
 | GND  (pin18)    | LED (Cathode)   |
 
 
-Picture of connections:
+Picture of connections:<br>
 ![RPi4 connected to RP2350](images/swd_gpio_connections.jpg)
 
 ## Install
