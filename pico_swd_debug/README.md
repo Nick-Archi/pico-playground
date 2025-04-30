@@ -50,12 +50,12 @@ Check out the References link to see where I pulled all my information from.
 	|-----------------|-----------------|
 	```	
 	
-	Picture of connections:
-	![RPi4 connected to RP2350](images/swd_gpio_connections.JPG)
+Picture of connections:
+![RPi4 connected to RP2350](images/swd_gpio_connections.JPG)
 
 ## Install
-[] Prior to Building OpenOCD
-	[] Ensure these packages are installed:
+[] Prior to Building OpenOCD<br>
+	[] Ensure these packages are installed:<br>
 
 	Packages installed prior OpenOCD build:
 	linuxgpiod, gpiod, libgpiod-dev, libtool
@@ -64,8 +64,8 @@ Check out the References link to see where I pulled all my information from.
 	$ sudo apt install <package_name>
 
 
-[] Build & Install OpenOCD
-	[] Clone OpenOCD Git in current directory:
+[] Build & Install OpenOCD<br>
+	[] Clone OpenOCD Git in current directory:<br>
 	```
 	** Make sure you don't have an openocd directory already in place
 	$ git clone https://github.com/raspberrypi/openocd.git
@@ -84,23 +84,24 @@ Check out the References link to see where I pulled all my information from.
 	```
 	
 ## Execute
-[] Prior Executing OpenOCD:
-	[] export OPENOCD_SCRIPTS environment variable
+[] Prior Executing OpenOCD:<br>
+
+	[] export OPENOCD_SCRIPTS environment variable<br>
 	```
 	$ export OPENOCD_SCRIPTS=/usr/local/share/openocd/scripts/
 	```
 	
-	[] Install raspberrypi-swd.cfg file into <openocd_installation_dir>/scripts/interface/
-	-- copy from my current github location:
+	[] Install raspberrypi-swd.cfg file into <openocd_installation_dir>/scripts/interface/<br>
+	-- copy from my current github location:<br>
 	```
 	$ cp ./raspberrypi-swd.cfg <openocd_installation_dir>/scripts/interface/
 	```
 	
 	-- OR copy from the pico-vscode/scripts/raspberrypi-swd.cfg [link](https://github.com/raspberrypi/pico-vscode/blob/main/scripts/raspberrypi-swd.cfg)<br>
 	
-[] Execute OpenOCD:
+[] Execute OpenOCD:<br>
 
-	[] Startup OpenOCD Server at localhost:3333
+	[] Startup OpenOCD Server at localhost:3333<br>
 	# this is the default for OpenOCD, I believe you can modify the port it lives at
 	```
 	sudo openocd -d -f interface/raspberrypi-swd.cfg -f target/rp2350.cfg
@@ -124,8 +125,6 @@ Check out the References link to see where I pulled all my information from.
 	```
 	
 ## References
--- I didn't get here without help...
 [OpenOCD's webpage](https://openocd.org/)<br>
 [OpenOCD's documentation](https://openocd.org/doc/html/index.html#toc-Running-1)<br>
 [Electronics Hub](https://www.electronicshub.org/programming-raspberry-pi-pico-with-swd/)<br>
-[]()<br>
