@@ -6,7 +6,7 @@ Welcome to my project repo!
 
 ## Table of Contents
 
-[Inten](#intent)<br>
+[Intent](#intent)<br>
 [Background](#background)<br>
 [Setup](#setup)<br>
 [Topics](#topics)<br>
