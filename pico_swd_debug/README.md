@@ -52,23 +52,23 @@ Picture of connections:
 ## Install
 Prior to Building OpenOCD, ensure these packages are installed: linuxgpiod, gpiod, libgpiod-dev, libtool<br>
 
-    ```
-    $ sudo apt update
-    $ sudo apt install <package_name>
-    ```
+```
+$ sudo apt update
+$ sudo apt install <package_name>
+```
 
-[] Build & Install OpenOCD<br>
-    ```
-    $ git clone https://github.com/raspberrypi/openocd.git
-    ```
+- Build & Install OpenOCD<br>
+```
+$ git clone https://github.com/raspberrypi/openocd.git
+```
 
-    [] Execute Build Scripts
-    ```
-    $ ./bootstrap
-    $ ./configure --enable-linuxgpiod -enable-bcm2835gpio #configure build for the --enabled-<packages>
-    ```
+- Execute Build Scripts
+```
+$ ./bootstrap
+$ ./configure --enable-linuxgpiod -enable-bcm2835gpio #configure build for the --enabled-<packages>
+```
 
-    [] Build & Install
+- Build & Install
 ```
 $ make
 $ sudo make install #install in /usr/local/share/openocd/
