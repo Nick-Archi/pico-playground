@@ -50,7 +50,7 @@ Picture of connections:
 ![RPi4 connected to RP2350](images/swd_gpio_connections.JPG)
 
 ## Install
-Prior to Building OpenOCD, ensure these packages are installed: linuxgpiod, gpiod, libgpiod-dev, libtool<br>
+- [ ] Prior to Building OpenOCD, ensure these packages are installed: linuxgpiod, gpiod, libgpiod-dev, libtool<br>
 
 ```
 $ sudo apt update
@@ -75,39 +75,34 @@ $ sudo make install #install in /usr/local/share/openocd/
 ```
 
 ## Execute
-[] Prior Executing OpenOCD:<br>
-
-    [] export OPENOCD_SCRIPTS environment variable<br>
+- Export OPENOCD_SCRIPTS environment variable<br>
 ```
 $ export OPENOCD_SCRIPTS=/usr/local/share/openocd/scripts/
+# Or wherever you installed openocd if it wasn't at above location
 ```
 
-    [] Install raspberrypi-swd.cfg file into <openocd_installation_dir>/scripts/interface/<br>
-    -- copy from my current github location:<br>
+- Install raspberrypi-swd.cfg file into <openocd_installation_dir>/scripts/interface/<br>
 ```
 $ cp ./raspberrypi-swd.cfg <openocd_installation_dir>/scripts/interface/
 ```
+-- OR copy from the pico-vscode/scripts/raspberrypi-swd.cfg [link](https://github.com/raspberrypi/pico-vscode/blob/main/scripts/raspberrypi-swd.cfg)<br>
 
-    -- OR copy from the pico-vscode/scripts/raspberrypi-swd.cfg [link](https://github.com/raspberrypi/pico-vscode/blob/main/scripts/raspberrypi-swd.cfg)<br>
-
-[] Execute OpenOCD:<br>
-
-    [] Startup OpenOCD Server at localhost:3333<br>
+- Startup OpenOCD Server at localhost:3333<br>
     # this is the default for OpenOCD, I believe you can modify the port it lives at
 ```
 sudo openocd -d -f interface/raspberrypi-swd.cfg -f target/rp2350.cfg
 ```
 
-[] Connecting to OpenOCD Server via GDB
+- Connecting to OpenOCD Server via GDB
 
-    [] Build your target .elf file with debug options enabled
+   - Build your target .elf file with debug options enabled
 ```
 $ mkdir debug
 $ cd debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
 $ make
 ```
 
-    [] Start GDB and connect
+- Start GDB and connect
 ```
 $ gdb <target>.elf
 $ (gdb) target remote localhost:3333
