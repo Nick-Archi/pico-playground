@@ -20,30 +20,30 @@ Check out the References link to see where I pulled all my information from.
 [] Assuming you've already installed & setup all packages & libraries for the pico-sdk, if not then check the other directories for the steps.
 
 ## Setup
-	Host System:
-	Raspberry Pi 4 Model B
+Host System:
+Raspberry Pi 4 Model B
 
-	Target System:
-	Raspberry Pi Pico 2 (RP2350)
+Target System:
+Raspberry Pi Pico 2 (RP2350)
 
-	Current Linux Kernel:
-	Linux <hostname> 5.15.0-1076-raspi #79-Ubuntu SMP PREEMPT Wed Mar 26 06:11:54 UTC 2025 aarch64 		aarch64 aarch64 GNU/Linux
+Current Linux Kernel:
+Linux <hostname> 5.15.0-1076-raspi #79-Ubuntu SMP PREEMPT Wed Mar 26 06:11:54 UTC 2025 aarch64 		aarch64 aarch64 GNU/Linux
 	
-	RPi4 to RP2350 GPIO Connections
-	|      RPi4       |      RP2350     |
-	|-----------------|-----------------|
-	| GPIO 24         | SWDIO           |
-	| GPIO 25         | SWCLK           |
-	| GND             | SWD GND         |
-	|-----------------|-----------------|
-	
-	
-	RP2350 to Components
-	|     RP2350      |   Components    |
-	|-----------------|-----------------|
-	| GP21 (pin27)    | 1kOhm -> LED    |
-	| GND  (pin18)    | LED (Cathode)   |
-	|-----------------|-----------------|
+RPi4 to RP2350 GPIO Connections
+|      RPi4       |      RP2350     |
+|-----------------|-----------------|
+| GPIO 24         | SWDIO           |
+| GPIO 25         | SWCLK           |
+| GND             | SWD GND         |
+|-----------------|-----------------|
+
+
+RP2350 to Components
+|     RP2350      |   Components    |
+|-----------------|-----------------|
+| GP21 (pin27)    | 1kOhm -> LED    |
+| GND  (pin18)    | LED (Cathode)   |
+|-----------------|-----------------|
 	
 Picture of connections:
 ![RPi4 connected to RP2350](images/swd_gpio_connections.JPG)
