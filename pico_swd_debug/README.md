@@ -50,9 +50,7 @@ Picture of connections:
 ![RPi4 connected to RP2350](images/swd_gpio_connections.JPG)
 
 ## Install
-Prior to Building OpenOCD, ensure these packages are installed:<br>
-
-linuxgpiod, gpiod, libgpiod-dev, libtool
+Prior to Building OpenOCD, ensure these packages are installed: linuxgpiod, gpiod, libgpiod-dev, libtool<br>
 
     ```
     $ sudo apt update
@@ -61,15 +59,14 @@ linuxgpiod, gpiod, libgpiod-dev, libtool
 
 [] Build & Install OpenOCD<br>
     ```
-    ** Make sure you don't have an openocd directory already in place
     $ git clone https://github.com/raspberrypi/openocd.git
     ```
 	
     [] Execute Build Scripts
-```
-$ ./bootstrap
-$ ./configure --enable-linuxgpiod -enable-bcm2835gpio #configure build for the --enabled-<packages>
-```
+    ```
+    $ ./bootstrap
+    $ ./configure --enable-linuxgpiod -enable-bcm2835gpio #configure build for the --enabled-<packages>
+    ```
 	
     [] Build & Install
 ```
