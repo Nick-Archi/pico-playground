@@ -48,34 +48,32 @@ Picture of connections:
 ![RPi4 connected to RP2350](images/swd_gpio_connections.JPG)
 
 ## Install
-[] Prior to Building OpenOCD<br>
-    [] Ensure these packages are installed:<br>
+Prior to Building OpenOCD, ensure these packages are installed:<br>
 
-	Packages installed prior OpenOCD build:
-	linuxgpiod, gpiod, libgpiod-dev, libtool
+    linuxgpiod, gpiod, libgpiod-dev, libtool
 
 ```
-	$ sudo apt update
-	$ sudo apt install <package_name>
+$ sudo apt update
+$ sudo apt install <package_name>
 ```
 
 [] Build & Install OpenOCD<br>
     [] Clone OpenOCD Git in current directory:<br>
 ```
-	** Make sure you don't have an openocd directory already in place
-	$ git clone https://github.com/raspberrypi/openocd.git
+** Make sure you don't have an openocd directory already in place
+$ git clone https://github.com/raspberrypi/openocd.git
 ```
 	
     [] Execute Build Scripts
 ```
-	$ ./bootstrap
-	$ ./configure --enable-linuxgpiod -enable-bcm2835gpio #configure build for the --enabled-<packages>
+$ ./bootstrap
+$ ./configure --enable-linuxgpiod -enable-bcm2835gpio #configure build for the --enabled-<packages>
 ```
 	
     [] Build & Install
 ```
-	$ make
-	$ sudo make install #install in /usr/local/share/openocd/
+$ make
+$ sudo make install #install in /usr/local/share/openocd/
 ```
 	
 ## Execute
@@ -83,13 +81,13 @@ Picture of connections:
 
     [] export OPENOCD_SCRIPTS environment variable<br>
 ```
-	$ export OPENOCD_SCRIPTS=/usr/local/share/openocd/scripts/
+$ export OPENOCD_SCRIPTS=/usr/local/share/openocd/scripts/
 ```
 	
     [] Install raspberrypi-swd.cfg file into <openocd_installation_dir>/scripts/interface/<br>
-	-- copy from my current github location:<br>
+    -- copy from my current github location:<br>
 ```
-	$ cp ./raspberrypi-swd.cfg <openocd_installation_dir>/scripts/interface/
+$ cp ./raspberrypi-swd.cfg <openocd_installation_dir>/scripts/interface/
 ```
 	
     -- OR copy from the pico-vscode/scripts/raspberrypi-swd.cfg [link](https://github.com/raspberrypi/pico-vscode/blob/main/scripts/raspberrypi-swd.cfg)<br>
@@ -99,24 +97,24 @@ Picture of connections:
     [] Startup OpenOCD Server at localhost:3333<br>
     # this is the default for OpenOCD, I believe you can modify the port it lives at
 ```
-    sudo openocd -d -f interface/raspberrypi-swd.cfg -f target/rp2350.cfg
+sudo openocd -d -f interface/raspberrypi-swd.cfg -f target/rp2350.cfg
 ```
 	
 [] Connecting to OpenOCD Server via GDB
 	
     [] Build your target .elf file with debug options enabled
 ```
-    $ mkdir debug
-    $ cd debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
-    $ make
+$ mkdir debug
+$ cd debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
+$ make
 ```
 	
     [] Start GDB and connect
 ```
-	$ gdb <target>.elf
-	$ (gdb) target remote localhost:3333
-	# At this point, you should be connected to the OpenOCD Server
-	# Start setting breakpoints and stepping through program execution
+$ gdb <target>.elf
+$ (gdb) target remote localhost:3333
+# At this point, you should be connected to the OpenOCD Server
+# Start setting breakpoints and stepping through program execution
 ```
 	
 ## References
