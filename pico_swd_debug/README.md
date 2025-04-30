@@ -14,12 +14,13 @@ Check out the References link to see where I pulled all my information from.
 [References](#references)<br>
 
 ## Objective
-[] Debug a simple blink program via OpenOCD
+- Debug a simple blink program via OpenOCD
 
 ## Assumptions
-[] Assuming you've already installed & setup all packages & libraries for the pico-sdk, if not then check the other directories for the steps.
+- Assuming you've already installed & setup all packages & libraries for the pico-sdk, if not then check the other directories for the steps.
 
 ## Setup
+```
 Host System:
 Raspberry Pi 4 Model B
 
@@ -28,6 +29,7 @@ Raspberry Pi Pico 2 (RP2350)
 
 Current Linux Kernel:
 Linux <hostname> 5.15.0-1076-raspi #79-Ubuntu SMP PREEMPT Wed Mar 26 06:11:54 UTC 2025 aarch64 		aarch64 aarch64 GNU/Linux
+```
 	
 RPi4 to RP2350 GPIO Connections
 |      RPi4       |      RP2350     |
@@ -50,19 +52,18 @@ Picture of connections:
 ## Install
 Prior to Building OpenOCD, ensure these packages are installed:<br>
 
-    linuxgpiod, gpiod, libgpiod-dev, libtool
+linuxgpiod, gpiod, libgpiod-dev, libtool
 
-```
-$ sudo apt update
-$ sudo apt install <package_name>
-```
+    ```
+    $ sudo apt update
+    $ sudo apt install <package_name>
+    ```
 
 [] Build & Install OpenOCD<br>
-    [] Clone OpenOCD Git in current directory:<br>
-```
-** Make sure you don't have an openocd directory already in place
-$ git clone https://github.com/raspberrypi/openocd.git
-```
+    ```
+    ** Make sure you don't have an openocd directory already in place
+    $ git clone https://github.com/raspberrypi/openocd.git
+    ```
 	
     [] Execute Build Scripts
 ```
