@@ -208,5 +208,21 @@ printf("DEBUG: %d\n", msg);
         case U8X8_MSG_BYTE_SEND: 
             data = (uint8_t *)arg_ptr;
             spi_write_blocking(SPI_PORT, data, 1);
+            break;
+        case U8X8_MSG_BYTE_SET_DC:
+// [TODO] Fill this case out...
+            printf("Investigate what needs to be set here?");
+            printf("%d\n", arg_int); 
+            gpio_put(oled.dc, arg_int);
+            break;
+        case U8X8_MSG_CAD_START_TRANSFER:
+            printf("whut\n");
+            break;
+        case U8X8_MSG_CAD_END_TRANSFER:
+            printf("whut\n");
+            break;
+        default:
+            printf("DEBUG: Un-caught msg of %d\n", msg);
+            break;
     }
 }

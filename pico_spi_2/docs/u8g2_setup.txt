@@ -178,3 +178,80 @@ oname.c:479
 } // exiting u8g2_SendBuffer
 
 [] 4/4/25, this tracing is near impossible...I either have to take another approach or find a way to run a debugger attached
+
+[] 4/30/25, Back baby! And this time I got some help! Able to setup OpenOCD to debug this crap.
+Useful things I learned:
+    [] Set up a logging file so that output from GDB is redirected
+        -- Open new terminal
+        -- execute, tty
+        -- within terminal reunning gdb
+        -- execute, tui enable
+        -- execute, set logging file <output-frm-tty>
+        -- execute, set logging on
+        -- now execute, display <variable> and output will show on terminal
+        
+    [] Tail the log file:
+        -- within gdb, execute, set logging file <file-name>
+        -- execute, set logging enable on
+        -- execute, display <var>
+        
+        -- in another terminal
+        -- execute, tail -f <file-name>
+        
+        
+[] Getting back into this but...how was the u8g2 library built again? It seems that I may have to build this with debug flags enabled because I am not able to break into intended functions
+
+[] Building spi project
+       -- run cmake -DCMAKE_BUILD_TYPE=Debug .. 2>&1 | tee debug_build_output.txt
+            -- Google for more optimization flags
+            -- turning off optimizations for RP2350, https://forums.raspberrypi.com/viewtopic.php?t=376453
+                -- ie) cmake -DCMAKE_BUILD_TYPE=Debug -DPICO_DEOPTIMIZED_DEBUG=ON .. 2>&1 | tee debug_build_output.txt
+        -- run make 2>&1|tee make_debug_build_output.txt    
+
+[] Rebuilding u8g2 library
+    [] Clone u8g2 from repo
+        -- execute the respective git clone command to clone this into the directory for the spi_2 proj
+        -- modifiy the CMakeLists.txt to use the ARM COrtex M33 compiler
+            -- add this line:
+            # Build with ARM Cortex M33 compiler
+            set(CMAKE_TOOLCHAIN_FILE $ENV{PICO_SDK_PATH}/cmake/preload/toolchains/pico_arm_cortex_m33_gcc.cmake)
+            
+    [] Building u8g2 for debug
+        -- create debug folder in u8g2 directory
+        -- run cmake -DCMAKE_BUILD_TYPE=Debug .. 2>&1 | tee debug_build_output.txt
+            -- Google for more optimization flags
+            -- turning off optimizations for RP2350, https://forums.raspberrypi.com/viewtopic.php?t=376453
+                -- ie) cmake -DCMAKE_BUILD_TYPE=Debug -DPICO_DEOPTIMIZED_DEBUG=ON .. 2>&1 | tee debug_build_output.txt
+        -- run make 2>&1|tee make_debug_build_output.txt
+        -- run make install
+
+[] Steps to setting up debugging environment:
+    [] Start OpenOCD
+        -- sudo openocd -d -f interface/raspberrypi-swd.cfg -f target/rp2350.cfg
+    [] Setup GDB
+        -- gdb <target>.elf
+        -- target remote localhost:3333
+        -- monitor reset init
+        -- load
+        -- tui enable ** switch to command window, enter 'focus cmd'
+        -- set logging file <file-name-path>
+        -- set logging enable on
+    [] Debugging Issues:
+    [] Disconnecting from Target
+        -- in gdb, execute monitor reset halt
+        -- OR, to continue having it run, execute monitor reset run
+    
+    
+[] Back to debugging
+    -- I am noticing an issue when executing u8g2_SendBuffer call in spi_main.c
+    -- Here's the stack trace:
+        -- u8x8_spi_send_data, u8x8_byte_SetDC, u8x8_cad_001, u8x8_cad_SendCmd, u8x8_d_ssd1306_sh1106_generic, u8x8_d_sh1106_128x64_noname, u8x8_DrawTile, u8g2_send_tile_row, u8g2_send_buffer, u8g2_SendBuffer, main
+
+        -- I think there's an issue with the u8x8_spi_send_data() , it doesn't seem like the switch handles all the cases
+            -- ie) msg set to U8X8_MSG_BYTE_SET_DC, but in function, switch doesn't handle this...
+        -- probably need to figure out what macros are missing and add to switch
+        -- take a look at u8x8.h:602 for hints?
+            -- also u8x8.h:681 ???
+            
+    -- I think a lot of my issues are stemming from the u8x8_spi_send_data() in sh1106_Interactions.c...
+        -- I need to figure out what all of the U8X8_MSG_CAD_* macros are doing and what handlers need to be created from them...
