@@ -4,6 +4,9 @@
 * 
 */
 
+#ifndef _C_ADAFRUIT_SH1106_H_
+#define _C_ADAFRUIT_SH1106_H_
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
@@ -19,7 +22,6 @@
   #define HEIGHT                 64
 #endif
 
-uint8_t buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
 
 // SPI Configuration for Raspberry Pi RP2350
 #define PICO    PICO_DEFAULT_SPI_TX_PIN
@@ -53,6 +55,7 @@ typedef struct SH1106_t
     uint8_t cs;
     uint8_t pico;
     uint8_t clk;
+    uint8_t* buffer; 
     SH1106_state init; // used to determine if oled struct initialized
 }SH1106;
 
@@ -69,12 +72,12 @@ typedef struct SH1106_t
 * @return SH1106*, pointer to object
 */
 void init_SH1106(
-    SH1106* oled,
     uint8_t dc, 
     uint8_t rst, 
     uint8_t cs,
     uint8_t pico,
-    uint8_t clk
+    uint8_t clk,
+    uint8_t* buffer
 );
 
 /*
@@ -83,11 +86,9 @@ void init_SH1106(
 * Configures SPI and utilizes the SH1106 object
 * to initialize and configure the GPIO pins on the Pico2
 *
-* @param SH1106* oled, pointer to object that is initialized
-*
 * @return void
 */
-void initialize_spi(SH1106* oled);
+void initialize_spi();
 
 /*
 * @brief Runs the power-up sequence for the SH1106.
@@ -96,16 +97,16 @@ void initialize_spi(SH1106* oled);
 * and code found on their github. This function should run after
 * setting up SPI communication.
 *
-* @param oled, pointer to SH1106 that is already initialized 
+* @return void
 */
-void begin_sh1106(SH1106* oled);
+void begin_sh1106();
 
 /*
 * @brief Executes reset steps for the SH1106.
 *
-* @param oled, pointer to SH1106 that is already initialized 
+* @return void
 */
-void reset_sh1106(SH1106* oled);
+void reset_sh1106();
 
 /*
 * @brief Executes the powerup & setup sequence for the SH1106.
@@ -115,38 +116,40 @@ void reset_sh1106(SH1106* oled);
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param oled, Pointing to object that has been initialized.
+* @return void
 */
-void configure_sh1106(SH1106* oled);
+void configure_sh1106();
 
 /*
 * @brief Sends a command to the SH1106 via SPI.
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param oled, Pointing to object that has been initialized.
 * @param cmd, byte to be sent to OLED as command.
+*
+* @return void
 */
-void send_command_sh1106(SH1106* oled, uint8_t cmd);
+void send_command_sh1106(uint8_t cmd);
 
 /*
 * @brief Sends a byte of data to the SH1106 via SPI.
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param oled, Pointing to object that has been initialized.
 * @param data, byte to be sent to OLED as data.
+*
+* @return void
 */
-void send_data_sh1106(SH1106* oled, uint8_t data);
+void send_data_sh1106(uint8_t data);
 
 /*
 * @brief Send buffer data to OLED to update the display 
 *
 * Pre-reqs: initialized SPI communication
 *
-* @param oled, Pointing to object that has been initialized.
+* @return void
 */
-void update_sh1106(SH1106* oled);
+void update_sh1106();
 
 /*
 * @brief Set the lower & upper column addresses 
@@ -155,5 +158,9 @@ void update_sh1106(SH1106* oled);
 * in the Sino Wealth SH1106 pdf
 *
 * @param col, Column between (0 - 127).
+*
+* @return void
 */
-void set_column_address(SH1106* oled, uint8_t col);
+void set_column_address(uint8_t col);
+
+#endif // _C_ADAFRUIT_SH1106_H_

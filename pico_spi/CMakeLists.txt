@@ -17,6 +17,7 @@ pico_sdk_init()
 # rest of proj
 
 add_executable(${EXEC1_NAME} 
+    ${SOURCE_DIR}spi_main.c
     ${SOURCE_DIR}Adafruit_SH1106.c
 )
 

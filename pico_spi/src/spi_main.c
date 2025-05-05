@@ -3,39 +3,54 @@
 * [] 
 *
 * Hardware Used:
-*
+* [] SH1106 OLED
 *
 */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 
-#define PICO    PICO_DEFAULT_SPI_TX_PIN
-#define CS      PICO_DEFAULT_SPI_CSN_PIN
-#define CLK     PICO_DEFAULT_SPI_SCK_PIN
-#define POCI    PICO_DEFAULT_SPI_RX_PIN
+#include "c_Adafruit_SH1106.h"
 
-#define BAUD    (1 * (10^6))
+SH1106 oled;
 
-#define SPI_PORT spi0
+uint8_t buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
+
+void static inline dbg()
+{
+    printf("ENTERING DEBUG\n");
+    while(1){sleep_ms(1000);}
+}
 
 int main()
 {
     stdio_init_all(); // print to serial
-    spi_init(SPI_PORT, BAUD);
+    sleep_ms(2000);
 
-    // initialize & config gpio pins 
-    gpio_set_function(POCI, GPIO_FUNC_SPI);
-    gpio_set_function(CLK, GPIO_FUNC_SPI);
-    gpio_set_function(PICO, GPIO_FUNC_SPI);
+    printf("Dbg: Beginning Setup\n");
 
-    // initialize the CS pin & set pin dir
-    gpio_init(CS)
-    gpio_set_dir(CS, GPIO_OUT);
-    gpio_put(CS, 1) // CS -> high, no communication yet
+    init_SH1106(
+        POCI,
+        RST,
+        CS,
+        PICO,
+        CLK,
+        buffer
+    );
 
+    begin_sh1106();
+
+    // set buffer to all 0x00 (write black to screen)
+    memset(buffer, 0x00, sizeof(buffer));
+
+    update_sh1106();
     
-
+    // set buffer to all 0xFF
+    memset(buffer, 0xFF, sizeof(buffer));
+    update_sh1106();
+dbg();
     return 0;
 }
