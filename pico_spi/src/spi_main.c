@@ -51,7 +51,7 @@ int main()
     
     // set buffer to all 0xFF
     //memset(buffer, 0xFF, sizeof(buffer));
-    memcpy(buffer+256, &bitmap[0][0], 8); 
+    memcpy(buffer+256, &bitmap[0][0], 8*16); 
     update_sh1106();
 dbg();
     return 0;
