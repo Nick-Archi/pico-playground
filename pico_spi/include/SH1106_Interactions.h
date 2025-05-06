@@ -4,12 +4,13 @@
 * 
 */
 
-#ifndef _C_ADAFRUIT_SH1106_H_
-#define _C_ADAFRUIT_SH1106_H_
+#ifndef _SH1106_INTERACTIONS_H_   
+#define _SH1106_INTERACTIONS_H_
 
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+
 
 /*
 * SH1106 Display settings
@@ -163,4 +164,6 @@ void update_sh1106();
 */
 void set_column_address(uint8_t col);
 
-#endif // _C_ADAFRUIT_SH1106_H_
+void modify_buffer(uint8_t* buffer);
+
+#endif // _SH1106_INTERACTIONS_H_

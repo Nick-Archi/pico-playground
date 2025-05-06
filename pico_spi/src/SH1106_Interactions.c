@@ -5,8 +5,9 @@
 * 
 */
 
-#include "c_Adafruit_SH1106.h"
+#include "SH1106_Interactions.h"
 #include "SH1106_Commands.h"
+#include "lame_bitmap.h"
 
 extern SH1106 oled;
 
@@ -189,4 +190,10 @@ void set_column_address(uint8_t col)
     col += 2;
     send_command_sh1106((0x10 | (col >> 4)));     
     send_command_sh1106((0x00 | (col & 0x0F)));     
+}
+
+
+void modify_buffer(uint8_t* buffer)
+{
+
 }

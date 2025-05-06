@@ -13,7 +13,8 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 
-#include "c_Adafruit_SH1106.h"
+#include "SH1106_Interactions.h"
+#include "lame_bitmap.h"
 
 SH1106 oled;
 
@@ -49,7 +50,8 @@ int main()
     update_sh1106();
     
     // set buffer to all 0xFF
-    memset(buffer, 0xFF, sizeof(buffer));
+    //memset(buffer, 0xFF, sizeof(buffer));
+    memcpy(buffer+256, &bitmap[0][0], 8); 
     update_sh1106();
 dbg();
     return 0;
