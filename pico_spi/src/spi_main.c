@@ -24,10 +24,11 @@ void static inline dbg()
     while(1){sleep_ms(1000);}
 }
 
-void static clear_screen();
-void static set_screen();
-void static testCase1();
-void static testCase2();
+static void clear_screen();
+static void set_screen();
+static void testCase1();
+static void testCase2();
+static void testCase3();
 
 int main()
 {
@@ -56,6 +57,7 @@ int main()
 
 //    testCase1();
     testCase2();
+    testCase3();
 
 dbg();
     return 0;
@@ -96,5 +98,14 @@ static void testCase2()
     write_string("Test 1", 3, 0, (8 * 6));
     write_string("Test 2", 4, 0, (8 * 6));
     write_string("Test 3", 5, 0, (8 * 6));
+    update_sh1106();
+}
+
+static void testCase3()
+{
+    write_string("0123456789", 6, 0, (8*10));
+//    write_string("0123456789", 6, 26, (8*10));
+    write_string("abcdefghijklmnop", 7, 0, (8*15));
+    write_string("qrstuvwxyz", 8, 0, (8*10));
     update_sh1106();
 }

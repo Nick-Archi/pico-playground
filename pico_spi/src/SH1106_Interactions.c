@@ -213,7 +213,7 @@ void set_column_address(uint8_t col)
 
 void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size)
 {
-    if(data == NULL || pg < 1 || pg > 7 || size > 1024 || offset > 16)
+    if(data == NULL || pg < 1 || pg > 8 || size > 1024 || offset > 16)
     { return; }
 
     memcpy(pg_buf.pages[pg - 1] + (offset * 8), data, size);
@@ -267,7 +267,7 @@ void insert_char(unsigned char val)
 
 void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size)
 {
-    if(val == NULL || pg_start > 7 || pos_start > 16 || total_size > 1024)
+    if(val == NULL || pg_start > 8 || pg_start < 1 || pos_start > 16 || total_size > 1024)
     { return; }
 
     size_t offset = pos_start;

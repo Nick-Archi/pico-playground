@@ -5,8 +5,8 @@ this development of the lame_bitmap
 
 Functionality:
 [ x ] Convert a char into it's corresponding digit or letter
-[ ] Write strings to specific pages to display on OLED
-[ ] Write full on sentences to the OLED?
+[ x ] Write strings to specific pages to display on OLED
+[ x ] Write full on sentences to the OLED?
 
 Objectives:
 [ x ] Converting char -> corresponding digit/letter:
@@ -21,3 +21,9 @@ Objectives:
         
 [ ] Work on writing a page at a time instead of cycling through all pages...     
     -- likely modify these functions:    
+    
+[ ] Possibly work on functionality to write more than (16 * 8) bytes to the page. This will cause the page offset to increase to the next page and for the offset to reset
+    -- some type of modulus functionality?
+    -- start looking at the write_string() in SH1106_Interactions.c
+        -- when offset/idx gets to 17, it doesn't write the remainder to the OLED
+        -- pos_start is also buggy. What happens if I wanted to start writing at position 26 in the buffer?
