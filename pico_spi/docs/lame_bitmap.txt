@@ -3,6 +3,10 @@ Creating a basic bitmap
 Objective:
 [ ] Create a simple bitmap so that I can write characters to the SH1106 OLED
 
+Notes:
+[ ] Each character is 8 bytes, there are 16 characters per page, there are 8 pages for sh1106
+    -- total # of bytes for entire screen = 8 * 16 * 8
+
 Requirements:
 [ ] Each character needs to fit within a 8x8 grid
     -- The SH1106 OLED is 128x64, there are 64 bits per page, 8 pages

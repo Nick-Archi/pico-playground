@@ -1,0 +1,20 @@
+Lame_Bitmap Roadmap
+
+Realized I needed to try and build a roadmap for what functionality I intend to bring with
+this development of the lame_bitmap
+
+Functionality:
+[ x ] Convert a char into it's corresponding digit or letter
+[ ] Write strings to specific pages to display on OLED
+[ ] Write full on sentences to the OLED?
+
+Objectives:
+[ x ] Converting char -> corresponding digit/letter:
+    -- modifying source files:
+[ currently ] Create string to bitmap functionality
+    -- ex) "hello" -> "HELLO" on OLED
+        -- start with 1st char
+        -- obtain the bitmap location for it
+        -- write the bitmap into the location in buffer
+        -- increment to next char and increment next spot in buffer
+        -- repeat

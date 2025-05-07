@@ -211,18 +211,12 @@ void set_column_address(uint8_t col)
     send_command_sh1106((0x00 | (col & 0x0F)));     
 }
 
-void write_to_page(const uint8_t* data, uint8_t pg, size_t size)
+void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size)
 {
-    if(data == NULL)
+    if(data == NULL || pg < 1 || pg > 7 || size > 1024 || offset > 16)
     { return; }
 
-    if(pg > 7)
-    { return; }
-
-    if(size > 1024)
-    { return; }
-
-    memcpy(pg_buf.pages[pg - 1], data, size);
+    memcpy(pg_buf.pages[pg - 1] + (offset * 8), data, size);
 }
 
 /*
@@ -262,5 +256,34 @@ void insert_char(unsigned char val)
     if(addr == NULL)
     return;
 
-    write_to_page(addr, 3, 8);
+    write_to_page(addr, 3, 0, 8);
+}
+
+void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size)
+{
+    if(val == NULL || pg_start > 7 || pos_start > 16 || total_size > 1024)
+    { return; }
+
+    size_t offset = pos_start;
+    for(size_t idx = 0; idx < (total_size/8); ++idx)
+    {
+        const uint8_t* addr = char_to_bitmap(val[idx]);
+        if(addr == NULL)
+        { return; }
+
+        // write a byte to page
+        write_to_page(addr, pg_start, offset, 8);
+        offset++; 
+    }
+      
+}
+
+void clear_buffer()
+{
+    memset(buffer, 0x00, BYTES);
+}
+
+void set_buffer()
+{
+    memset(buffer, 0xFF, BYTES);
 }

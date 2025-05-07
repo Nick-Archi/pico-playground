@@ -190,13 +190,20 @@ void set_column_address(uint8_t col);
 * @brief Write to specific page in buffer 
 *
 * @param data, Address of data to copy into buffer.
-* @param pg, page number for indexing into buffer.
+* @param pg, page number (1-8) for indexing into buffer.
+* @param offset, position to write to in selected page.
 * @param size, number of bytes to copy, must be < 128 (page size).
 *
 * @return void
 */
-void write_to_page(const uint8_t* data, uint8_t pg, size_t size);
+void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size);
 
 void insert_char(unsigned char val);
+
+void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size);
+
+void clear_buffer();
+
+void set_buffer();
 
 #endif // _SH1106_INTERACTIONS_H_

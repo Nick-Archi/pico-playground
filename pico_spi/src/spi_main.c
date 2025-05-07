@@ -24,6 +24,11 @@ void static inline dbg()
     while(1){sleep_ms(1000);}
 }
 
+void static clear_screen();
+void static set_screen();
+void static testCase1();
+void static testCase2();
+
 int main()
 {
     stdio_init_all(); // print to serial
@@ -40,21 +45,55 @@ int main()
     );
 
     begin_sh1106();
+     
+    // set buffer to all 0xFF (write white to screen)
+    set_buffer();
+    update_sh1106();
 
     // set buffer to all 0x00 (write black to screen)
-    write_to_page(0x00, 0, BYTES);
-//    memset(buffer, 0x00, sizeof(buffer));
-
-    update_sh1106();
-    
-    // set buffer to all 0xFF
-    insert_char('a');
-//    memcpy(buffer + (256 + 0), &char_bitmap[0][0], 8*26); 
-//    memcpy(buffer + (256 + (8*26)), &digi_bitmap[0][0], 8*10); 
+    clear_buffer();
     update_sh1106();
 
-//    memset(buffer, 0xFF, sizeof(buffer));
-//    update_sh1106();
+//    testCase1();
+    testCase2();
+
 dbg();
     return 0;
+}
+
+void static testCase1()
+{
+            // test all chars
+        unsigned char lowercase[] = {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p','q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+
+        unsigned char uppercase[] = {
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P','Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}; 
+
+        unsigned char digits[] = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+        for(int i = 0; i < sizeof(lowercase); ++i)
+        {
+            insert_char(lowercase[i]);
+            update_sh1106();
+        }
+        for(int i = 0; i < sizeof(uppercase); ++i)
+        {
+            insert_char(uppercase[i]);
+            update_sh1106();
+        }
+        for(int i = 0; i < sizeof(digits); ++i)
+        {
+            insert_char(digits[i]);
+            update_sh1106();
+        }
+ 
+}
+
+static void testCase2()
+{
+    unsigned char string[] = "DONE"; 
+    write_string(string, 3, 0, 32);
+    update_sh1106();
 }
