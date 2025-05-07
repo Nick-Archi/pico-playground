@@ -20,6 +20,7 @@ An introductory project to get familiar with the basics of:
 
 [] Turn on the OLED
 	- Sounds simple but this requires reading whatever documentation I can find on this SH1106
+[] Display Characters on the screen
 
 ## Setup
 

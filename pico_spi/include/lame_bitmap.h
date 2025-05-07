@@ -7,9 +7,13 @@
 #ifndef _LAME_BITMAP_H_
 #define _LAME_BITMAP_H_
 
+/*
+* 2D binary array containing bitmap for characters A - Z
+* 
+*/
 static const uint8_t char_bitmap[][8] =
 { 
-    // A
+    // A char_bitmap[0][0-7]
     {
         0b00000000,
         0b01111000,
@@ -21,7 +25,7 @@ static const uint8_t char_bitmap[][8] =
         0b00000000,
     },
 
-    // B
+    //B char_bitmap[1][0-7]
     {
         0b00000000,
         0b01111110,
@@ -55,7 +59,7 @@ static const uint8_t char_bitmap[][8] =
         0b00011000,
         0b00000000,
     },
-    // E
+    //E
     {
         0b00000000,
         0b01111110,
@@ -305,17 +309,21 @@ static const uint8_t char_bitmap[][8] =
     }
 };
 
+/*
+* Binary array containing bitmap for digits 
+* 0 - 9
+*/
 static const uint8_t digi_bitmap[][8] =
 { 
     //0
     {
         0b00000000,
-        0b01111110,
+        0b00111100,
         0b01000010,
         0b01010010,
         0b01001010,
         0b01000010,
-        0b01111110,
+        0b00111100,
         0b00000000,
     },
 
@@ -334,7 +342,7 @@ static const uint8_t digi_bitmap[][8] =
     {
         0b00000000,
         0b01001000,
-        0b01000100,
+        0b01001100,
         0b01100010,
         0b01111110,
         0b01011100,
@@ -421,5 +429,6 @@ static const uint8_t digi_bitmap[][8] =
         0b00000000,
     },
 };
+
 
 #endif //_LAME_BITMAP_H_

@@ -8,9 +8,10 @@
 #define _SH1106_INTERACTIONS_H_
 
 #include <stdio.h>
+#include <string.h>
+
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
-
 
 /*
 * SH1106 Display settings
@@ -19,8 +20,9 @@
 #define SH1106_128_64
 
 #if defined SH1106_128_64
-  #define WIDTH                  128
-  #define HEIGHT                 64
+  #define WIDTH                  (128)
+  #define HEIGHT                 (64)
+  #define BYTES                  ((HEIGHT * WIDTH) / 8)
 #endif
 
 
@@ -45,6 +47,14 @@ typedef enum
     INIT = 1,       /**< object has setup SPI comm */
     CONFIGED = 2,   /**<  */
 }SH1106_state;
+
+/*
+* Typedef'd struct assist accessing pages(0-7) in buffer 
+*/
+typedef struct paged_buffer_t
+{
+    uint8_t* pages[8];
+}paged_buffer;
 
 /*
 * Object that will hold configuration info for an SH1106 OLED 
@@ -77,8 +87,7 @@ void init_SH1106(
     uint8_t rst, 
     uint8_t cs,
     uint8_t pico,
-    uint8_t clk,
-    uint8_t* buffer
+    uint8_t clk
 );
 
 /*
@@ -90,6 +99,19 @@ void init_SH1106(
 * @return void
 */
 void initialize_spi();
+
+/*
+* @brief Initialize static paged buffer variable 
+*
+* Initialize static paged buffer variable, within 
+* corresponding .c file, to point to address of 
+* indicies that are multiples of 128. Essentially
+* each page is 128 bits so this is the address of
+* each page. 
+*
+* @return void
+*/
+void init_page_buffer();
 
 /*
 * @brief Runs the power-up sequence for the SH1106.
@@ -141,7 +163,7 @@ void send_command_sh1106(uint8_t cmd);
 *
 * @return void
 */
-void send_data_sh1106(uint8_t data);
+void send_data_sh1106(uint8_t* data);
 
 /*
 * @brief Send buffer data to OLED to update the display 
@@ -164,6 +186,17 @@ void update_sh1106();
 */
 void set_column_address(uint8_t col);
 
-void modify_buffer(uint8_t* buffer);
+/*
+* @brief Write to specific page in buffer 
+*
+* @param data, Address of data to copy into buffer.
+* @param pg, page number for indexing into buffer.
+* @param size, number of bytes to copy, must be < 128 (page size).
+*
+* @return void
+*/
+void write_to_page(const uint8_t* data, uint8_t pg, size_t size);
+
+void insert_char(unsigned char val);
 
 #endif // _SH1106_INTERACTIONS_H_

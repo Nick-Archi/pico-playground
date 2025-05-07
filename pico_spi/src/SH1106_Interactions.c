@@ -11,6 +11,16 @@
 
 extern SH1106 oled;
 
+/*
+* Array of bytes used to hold data to write to OLED
+*/
+static uint8_t buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
+
+/*
+* Assist with writing to specific pages in OLED buffer
+*/
+static paged_buffer pg_buf;
+
 void static inline dbg()
 {
     printf("ENTERING DEBUG\n");
@@ -22,8 +32,7 @@ void init_SH1106(
     uint8_t rst, 
     uint8_t cs,
     uint8_t pico,
-    uint8_t clk,
-    uint8_t* buffer
+    uint8_t clk
 )
 {
     oled.dc = dc;
@@ -71,7 +80,17 @@ void initialize_spi()
     gpio_set_dir(oled.dc, GPIO_OUT);
     gpio_put(oled.dc, 0);
 
+    init_page_buffer();
+
     oled.init = INIT;
+}
+
+void init_page_buffer()
+{
+    for(int i = 0; i < 8; ++i)
+    {
+        pg_buf.pages[i] = &buffer[(i * 128)];
+    }
 }
 
 void configure_SH1106()
@@ -141,7 +160,7 @@ void send_command_sh1106(uint8_t cmd)
     gpio_put(oled.cs, 1);
 }
 
-void send_data_sh1106(uint8_t data)
+void send_data_sh1106(uint8_t* data)
 {
     if(oled.init != INIT)
     {
@@ -152,7 +171,7 @@ void send_data_sh1106(uint8_t data)
     gpio_put(oled.dc, 1); // Data mode
     gpio_put(oled.cs, 0);
     sleep_ms(10);
-    spi_write_blocking(SPI_PORT, &data, 1);
+    spi_write_blocking(SPI_PORT, data, 1);
     gpio_put(oled.cs, 1);
 }
 
@@ -179,7 +198,7 @@ void update_sh1106()
             * ex) page = 1, i = 0, [1 * 128 + 0], access buffer[128] -
             * buffer[256], that's 128 bytes for page 1...
             */
-            send_data_sh1106(oled.buffer[page * WIDTH + i]);
+            send_data_sh1106(&oled.buffer[page * WIDTH + i]);
         }
     }
 }
@@ -192,8 +211,56 @@ void set_column_address(uint8_t col)
     send_command_sh1106((0x00 | (col & 0x0F)));     
 }
 
-
-void modify_buffer(uint8_t* buffer)
+void write_to_page(const uint8_t* data, uint8_t pg, size_t size)
 {
+    if(data == NULL)
+    { return; }
 
+    if(pg > 7)
+    { return; }
+
+    if(size > 1024)
+    { return; }
+
+    memcpy(pg_buf.pages[pg - 1], data, size);
+}
+
+/*
+* @brief Convert a character into the bitmap value 
+*
+* @param val, ascii value for a character
+*
+* @return void
+*/
+static const uint8_t* char_to_bitmap(unsigned char val)
+{
+    const uint8_t* addr = NULL;
+
+    if(val >= '0' && val <= '9')
+    {
+        val -= 48;
+        addr = &digi_bitmap[val][0];
+    }
+    
+    if(val >= 'A' && val <= 'z') 
+    {
+        if(val >= 'a' && val <= 'z')
+        {
+            val -= 32;
+        }
+
+        val -= 65;
+        addr = &char_bitmap[val][0];
+    }
+
+    return addr;
+}
+
+void insert_char(unsigned char val)
+{
+    const uint8_t* addr = char_to_bitmap(val);
+    if(addr == NULL)
+    return;
+
+    write_to_page(addr, 3, 8);
 }
