@@ -93,7 +93,8 @@ void static testCase1()
 
 static void testCase2()
 {
-    unsigned char string[] = "DONE"; 
-    write_string(string, 3, 0, 32);
+    write_string("Test 1", 3, 0, (8 * 6));
+    write_string("Test 2", 4, 0, (8 * 6));
+    write_string("Test 3", 5, 0, (8 * 6));
     update_sh1106();
 }

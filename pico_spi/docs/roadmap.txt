@@ -11,10 +11,13 @@ Functionality:
 Objectives:
 [ x ] Converting char -> corresponding digit/letter:
     -- modifying source files:
-[ currently ] Create string to bitmap functionality
+[ x ] Create string to bitmap functionality
     -- ex) "hello" -> "HELLO" on OLED
         -- start with 1st char
         -- obtain the bitmap location for it
         -- write the bitmap into the location in buffer
         -- increment to next char and increment next spot in buffer
         -- repeat
+        
+[ ] Work on writing a page at a time instead of cycling through all pages...     
+    -- likely modify these functions:    

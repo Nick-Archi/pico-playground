@@ -430,5 +430,20 @@ static const uint8_t digi_bitmap[][8] =
     },
 };
 
+// special characters
+static const uint8_t spec_bitmap[][8] = 
+{
+    //Space
+    {
+        0b00000000,
+        0b00000000,
+        0b00000000,
+        0b00000000,
+        0b00000000,
+        0b00000000,
+        0b00000000,
+        0b00000000,
+    }   
+};
 
 #endif //_LAME_BITMAP_H_

@@ -230,6 +230,12 @@ static const uint8_t* char_to_bitmap(unsigned char val)
 {
     const uint8_t* addr = NULL;
 
+    if(val == ' ')
+    {
+        val -= 32;
+        addr = &spec_bitmap[val][0];
+    }
+
     if(val >= '0' && val <= '9')
     {
         val -= 48;
