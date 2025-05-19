@@ -4,6 +4,8 @@
 #  @brief This file converts bitmap txt file into a header
 #  @author Nick-Archi
 
+# [TODO] Who knows...maybe turn this into a class if I'm bored
+
 """
 Objective:
 Script created to convert a bitmap text file into a header file
@@ -11,6 +13,9 @@ for usage. Helps speed up edits I make and to ensure that the correct
 bitmap is generated.
 """
 
+from sys import argv
+
+# global variable used to store the name of the file
 orig_file = ""
 
 ## @brief Reads in bitmap file to create list of lists for bitmap generation
@@ -61,7 +66,7 @@ def create_list(filepath="") -> list:
 
 ## @brief Convert pre bitmap values into bitmap 
 ## @return list of bitmap values 
-def generate_bitmapping(mapping):
+def generate_bitmapping(mapping) -> list:
     """
     TODO: will require some playing around with the list returned from
     create_list(). Mapping so far is: ret[ ][ ][0][ ]
@@ -120,14 +125,30 @@ def generate_bitmap_file(**kwargs):
     
     body_info.append("};\n")
 
-    with open("./{}_bitmap.h".format(filename), "w") as f:
+    with open("../include/{}_bitmap.h".format(filename), "w") as f:
         f.writelines(header_info)
         f.writelines(body_info)
         f.writelines(trailer_info)
+
+    print("{} Header file generated to ../include/".format(filename))
     
     
 if __name__ == "__main__":
     print("Running")
-    map_list = create_list("../docs/sample.txt")
+  
+    try:
+        input_file = argv[1]
+    except IndexError:
+        print("Missing argv[1] in call.")
+        print("Example Call: ./generate_bit_map_header.py <input_file_path> <out_name>")
+         
+    try:
+        name = argv[2]
+    except IndexError:
+        print("Missing argv[2] in call.")
+        print("Example Call: ./generate_bit_map_header.py <input_file_path> <out_name>")
+        exit()
+ 
+    map_list = create_list(input_file)
     bit_list = generate_bitmapping(map_list)
-    generate_bitmap_file(filename="test",bitmapping=bit_list)
+    generate_bitmap_file(filename=name,bitmapping=bit_list)
