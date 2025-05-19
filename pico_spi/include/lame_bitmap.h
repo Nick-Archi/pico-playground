@@ -11,6 +11,7 @@
 * 2D binary array containing bitmap for characters A - Z
 * 
 */
+/*
 static const uint8_t char_bitmap[][8] =
 { 
     // A char_bitmap[0][0-7]
@@ -308,12 +309,12 @@ static const uint8_t char_bitmap[][8] =
         0b00000000,
     }
 };
-
+*/
 /*
 * Binary array containing bitmap for digits 
 * 0 - 9
 */
-static const uint8_t digi_bitmap[][8] =
+/*static const uint8_t digi_bitmap[][8] =
 { 
     //0
     {
@@ -429,7 +430,7 @@ static const uint8_t digi_bitmap[][8] =
         0b00000000,
     },
 };
-
+*/
 // special characters
 static const uint8_t spec_bitmap[][8] = 
 {

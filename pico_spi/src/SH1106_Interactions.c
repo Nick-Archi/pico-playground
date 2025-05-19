@@ -8,7 +8,8 @@
 #include "SH1106_Interactions.h"
 #include "SH1106_Commands.h"
 #include "lame_bitmap.h"
-#include "test_bitmap.h"
+#include "char_bitmap.h"
+#include "digi_bitmap.h"
 
 extern SH1106 oled;
 
@@ -251,7 +252,7 @@ static const uint8_t* char_to_bitmap(unsigned char val)
         }
 
         val -= 65;
-        addr = &test_bitmap[val][0];
+        addr = &char_bitmap[val][0];
     }
 
     return addr;
