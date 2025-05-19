@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+## @file generate_bit_map_header.py
+#  @brief This file converts bitmap txt file into a header
+#  @author Nick-Archi
+
 """
 Objective:
 Script created to convert a bitmap text file into a header file
@@ -7,6 +11,8 @@ for usage. Helps speed up edits I make and to ensure that the correct
 bitmap is generated.
 """
 
+## @brief Reads in bitmap file to create list of lists for bitmap generation
+## @return list of pre bitmap values 
 def create_list() -> list:
     ret = []  
 
@@ -44,6 +50,9 @@ def create_list() -> list:
 
     return ret
 
+
+## @brief Convert pre bitmap values into bitmap 
+## @return list of bitmap values 
 def generate_bitmapping(mapping):
     """
     TODO: will require some playing around with the list returned from
@@ -54,19 +63,24 @@ def generate_bitmapping(mapping):
                                           |  ----- row in character list
                                           ----- character #
     """
+    ret = []
     binary = 0
 
-    for col in range(len(mapping[0]) - 1, -1, -1):
-        for row in range(len(mapping[0]) - 1, -1, -1):
-            #print(mapping[0][row][0][col], end="")
-            binary <<= 1
-            if(mapping[0][row][0][col] == '.'):
-                binary |= 0
-            else:
-                binary |= 1
-        print("0b{:08b}".format(binary))
-        binary = 0
-    pass
+    for char in range(len(mapping)):
+        ret.append([])
+        for col in range(0, len(mapping[0]), 1):
+            for row in range(len(mapping[char]) - 1, -1, -1):
+                #print(mapping[0][row][0][col], end="")
+                binary <<= 1
+                if(mapping[char][row][0][col] == '.'):
+                    binary |= 0
+                else:
+                    binary |= 1
+            print("0b{:08b}".format(binary))
+            ret[char].append(["0b{:08b}".format(binary)])
+            binary = 0
+
+    return ret 
 
 if __name__ == "__main__":
     print("Running")
