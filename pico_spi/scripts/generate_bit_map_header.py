@@ -7,7 +7,7 @@ for usage. Helps speed up edits I make and to ensure that the correct
 bitmap is generated.
 """
 
-def create_list():
+def create_list() -> list:
     ret = []  
 
     with open("../docs/sample.txt") as f:
@@ -20,7 +20,6 @@ def create_list():
     index_offset = -4
 
     for whole_line in data.split("\n"):
-        print(f"DEBUG {curr_line}")
         if(whole_line == ''):
             curr_line += 1
             continue
@@ -33,7 +32,8 @@ def create_list():
                 index = 0
 
             if((curr_line % 9) == 0):
-                ret.append([line])
+                ret.append([])
+                ret[index + index_offset].append([line])
             else:
                 ret[index + index_offset].append([line])
 
@@ -42,10 +42,20 @@ def create_list():
         # done parsing a line
         curr_line += 1
 
-    for entry in ret:
-        for line in entry:
-            print(line)
+    return ret
+
+def generate_bitmapping(mapping):
+    """
+    TODO: will require some playing around with the list returned from
+    create_list(). Mapping so far is: ret[ ][ ][0][ ]
+                                          ^  ^  ^  ^----- selects character
+                                          |  |  |
+                                          |  |  ------ static
+                                          |  ----- row in character list
+                                          ----- character #
+    """
+    pass
 
 if __name__ == "__main__":
     print("Running")
-    create_list()
+    bit_dict = create_list()
