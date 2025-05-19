@@ -54,8 +54,21 @@ def generate_bitmapping(mapping):
                                           |  ----- row in character list
                                           ----- character #
     """
+    binary = 0
+
+    for col in range(len(mapping[0]) - 1, -1, -1):
+        for row in range(len(mapping[0]) - 1, -1, -1):
+            #print(mapping[0][row][0][col], end="")
+            binary <<= 1
+            if(mapping[0][row][0][col] == '.'):
+                binary |= 0
+            else:
+                binary |= 1
+        print("0b{:08b}".format(binary))
+        binary = 0
     pass
 
 if __name__ == "__main__":
     print("Running")
     bit_dict = create_list()
+    generate_bitmapping(bit_dict)
