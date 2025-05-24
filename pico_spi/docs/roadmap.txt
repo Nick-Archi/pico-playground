@@ -37,6 +37,8 @@ bitmap
             [ ] dirty DS:
                 -- implement for each page, ditry start_col and end_col
                     -- pos_start in write_string will give me clues on how to update the dirty DS
+        -- Tinkering with write to page
+            -- I've messed around with the write_string() and modified where in the buffer the write is occuring with modifying the offset value
            
     
 [ ] Possibly work on functionality to write more than (16 * 8) bytes to the page. This will cause the page offset to increase to the next page and for the offset to reset

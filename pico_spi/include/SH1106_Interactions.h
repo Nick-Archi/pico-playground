@@ -49,6 +49,30 @@ typedef enum
 }SH1106_state;
 
 /*
+* @struct dirty_page_t
+* @brief Track individual page has been written (dirtied)
+* 
+* Typedef'd struct assisting individual dirty page tracking 
+*/
+typedef struct dirty_page_t
+{
+    uint8_t dirtied; /** Dirtied (1), Clean (0) */
+    uint8_t dirty_start_col; /** Start offset of dirty */
+    uint8_t dirty_end_col; /** End offset of dirty */
+}dirty_page;
+
+/*
+* @struct dirty_pages_t
+* @brief Grouped dirty_page_t 
+* 
+* Typedef'd struct grouping dirty_page_t together for easier access 
+*/
+typedef struct dirty_pages_t
+{
+    dirty_page pages[8];
+}dirty_pages;
+
+/*
 * Typedef'd struct assist accessing pages(0-7) in buffer 
 */
 typedef struct paged_buffer_t
