@@ -49,35 +49,26 @@ typedef enum
 }SH1106_state;
 
 /*
-* @struct dirty_page_t
-* @brief Track individual page has been written (dirtied)
+* @struct page_desc_t
+* @brief Track individual page info
 * 
-* Typedef'd struct assisting individual dirty page tracking 
+* Typedef'd struct assisting in tracking individual info:
+* buffer address, page dirtied info,  
 */
-typedef struct dirty_page_t
+typedef struct page_desc_t
 {
+    uint8_t* page;
     uint8_t dirtied; /** Dirtied (1), Clean (0) */
     uint8_t dirty_start_col; /** Start offset of dirty */
     uint8_t dirty_end_col; /** End offset of dirty */
-}dirty_page;
-
-/*
-* @struct dirty_pages_t
-* @brief Grouped dirty_page_t 
-* 
-* Typedef'd struct grouping dirty_page_t together for easier access 
-*/
-typedef struct dirty_pages_t
-{
-    dirty_page pages[8];
-}dirty_pages;
+}page_desc;
 
 /*
 * Typedef'd struct assist accessing pages(0-7) in buffer 
 */
 typedef struct paged_buffer_t
 {
-    uint8_t* pages[8];
+    page_desc pages[8];
 }paged_buffer;
 
 /*
@@ -224,8 +215,6 @@ void set_column_address(uint8_t col);
 */
 void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size);
 
-void insert_char(unsigned char val);
-
 /*
 * @brief Write to specific page in buffer 
 *
@@ -238,8 +227,12 @@ void insert_char(unsigned char val);
 */
 void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size);
 
+void update_dirty_page(size_t pg, size_t offset);
+
 void clear_buffer();
 
 void set_buffer();
+
+void insert_char(unsigned char val);
 
 #endif // _SH1106_INTERACTIONS_H_

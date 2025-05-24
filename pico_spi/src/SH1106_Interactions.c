@@ -91,7 +91,10 @@ void init_page_buffer()
 {
     for(int i = 0; i < 8; ++i)
     {
-        pg_buf.pages[i] = &buffer[(i * 128)];
+        pg_buf.pages[i].page = &buffer[(i * 128U)];
+        pg_buf.pages[i].dirtied = 0U;
+        pg_buf.pages[i].dirty_start_col= UINT8_MAX;
+        pg_buf.pages[i].dirty_end_col = 0U;
     }
 }
 
@@ -201,7 +204,11 @@ void update_sh1106()
             * ex) page = 1, i = 0, [1 * 128 + 0], access buffer[128] -
             * buffer[256], that's 128 bytes for page 1...
             */
+
+            // [TODO] send the individual paged_buffer_t instead of buffer?
             send_data_sh1106(&oled.buffer[page * WIDTH + i]);
+
+            // [TODO] clear the dirty info
         }
     }
 }
@@ -221,11 +228,16 @@ void set_column_address(uint8_t col)
 
 void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size)
 {
+    /* 
+    * [TODO] might need to update this size check...since it's 
+    * possible to write to all pages with a single write..
+    */
     if(data == NULL || pg < 1 || pg > 8 || size > 1024 || offset > 16)
     { return; }
 
     // [TODO] Implement dirty page update here?
-    memcpy(pg_buf.pages[pg - 1] + (offset * 8), data, size);
+    update_dirty_page(pg, offset);
+    memcpy(pg_buf.pages[pg - 1].page + (offset * 8), data, size);
 }
 
 /*
@@ -265,15 +277,6 @@ static const uint8_t* char_to_bitmap(unsigned char val)
     return addr;
 }
 
-void insert_char(unsigned char val)
-{
-    const uint8_t* addr = char_to_bitmap(val);
-    if(addr == NULL)
-    return;
-
-    write_to_page(addr, 3, 0, 8);
-}
-
 void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size)
 {
     if(val == NULL || pg_start > 8 || pg_start < 1 || pos_start > 16 || total_size > 128)
@@ -293,6 +296,14 @@ void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, s
       
 }
 
+void update_dirty_page(size_t pg, size_t offset)
+{
+    page_desc* desc_ptr = &pg_buf.pages[pg - 1];
+    desc_ptr->dirtied = 1;
+    desc_ptr->dirty_start_col = (desc_ptr->dirty_start_col > offset) ? offset : desc_ptr->dirty_start_col; 
+    desc_ptr->dirty_end_col = (desc_ptr->dirty_end_col < offset) ? offset : desc_ptr->dirty_end_col; 
+}
+
 void clear_buffer()
 {
     memset(buffer, 0x00, BYTES);
@@ -301,4 +312,13 @@ void clear_buffer()
 void set_buffer()
 {
     memset(buffer, 0xFF, BYTES);
+}
+
+void insert_char(unsigned char val)
+{
+    const uint8_t* addr = char_to_bitmap(val);
+    if(addr == NULL)
+    return;
+
+    write_to_page(addr, 3, 0, 8);
 }
