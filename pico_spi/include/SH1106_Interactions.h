@@ -177,7 +177,7 @@ void update_sh1106();
 /*
 * @brief Set the lower & upper column addresses 
 *
-* For more information, read the section on The Column Address pg 15
+* For more information, read the section on The Column Address pg 15, 19
 * in the Sino Wealth SH1106 pdf
 *
 * @param col, Column between (0 - 127).
@@ -192,14 +192,26 @@ void set_column_address(uint8_t col);
 * @param data, Address of data to copy into buffer.
 * @param pg, page number (1-8) for indexing into buffer.
 * @param offset, position to write to in selected page.
-* @param size, number of bytes to copy, must be < 128 (page size).
+* @param size, number of bytes to copy, must be <= 1024 (page size).
 *
 * @return void
+* @notes each char is 8x8 = 64. Only 16 chars can fit on the screen. So 
+* 16 * 64 = 1024. This is the max per page
 */
 void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size);
 
 void insert_char(unsigned char val);
 
+/*
+* @brief Write to specific page in buffer 
+*
+* @param val,.
+* @param pg_start,
+* @param pos_start,
+* @param total_size, number of bytes to copy, must be < 128 (page size).
+*
+* @return void
+*/
 void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size);
 
 void clear_buffer();

@@ -117,9 +117,8 @@ void configure_SH1106()
     }
 
     // send over SET_DISPLAY_ON & delay
-    uint8_t data = SH1106_DISPLAYON; 
-    printf("DEBUG: Sending over %X\n", data);
-    send_command_sh1106(data);
+    printf("DEBUG: Sending over %X\n", SH1106_DISPLAYON);
+    send_command_sh1106(SH1106_DISPLAYON);
     sleep_ms(500);
 }
 
@@ -185,6 +184,8 @@ void update_sh1106()
         while(1);
     }
 
+    // [TODO] Implement dirty page lookup here?
+
     // update each page
     for(uint8_t page = 0; page < 8; page++)
     {
@@ -207,9 +208,14 @@ void update_sh1106()
 
 void set_column_address(uint8_t col)
 {
-    //[TODO] This part is absolute magic to me and I don't fully understand yet
+    /* 
+    * this is special for the SH1106, seems it needs to be offset
+    * otherwise text on the OLED will be improper.
+    */
     col += 2;
+    // set the higher column address?
     send_command_sh1106((0x10 | (col >> 4)));     
+    // set the lower column address?
     send_command_sh1106((0x00 | (col & 0x0F)));     
 }
 
@@ -269,7 +275,7 @@ void insert_char(unsigned char val)
 
 void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size)
 {
-    if(val == NULL || pg_start > 8 || pg_start < 1 || pos_start > 16 || total_size > 1024)
+    if(val == NULL || pg_start > 8 || pg_start < 1 || pos_start > 16 || total_size > 128)
     { return; }
 
     size_t offset = pos_start;

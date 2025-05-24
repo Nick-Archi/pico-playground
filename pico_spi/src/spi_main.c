@@ -104,8 +104,9 @@ static void testCase2()
 static void testCase3()
 {
     write_string("0123456789", 6, 0, (8*10));
+    write_string("01234", 6, 5, (8*5));
 //    write_string("0123456789", 6, 26, (8*10));
-    write_string("abcdefghijklmnop", 7, 0, (8*15));
+    write_string("abcdefghijklmnop", 7, 0, (8*16));
     write_string("qrstuvwxyz", 8, 0, (8*10));
     update_sh1106();
 }
