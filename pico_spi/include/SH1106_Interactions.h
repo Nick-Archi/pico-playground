@@ -20,6 +20,7 @@
 #define SH1106_128_64
 
 #if defined SH1106_128_64
+  #define PAGES                  (8)
   #define WIDTH                  (128)
   #define HEIGHT                 (64)
   #define BYTES                  ((HEIGHT * WIDTH) / 8)

@@ -16,7 +16,7 @@ extern SH1106 oled;
 /*
 * Array of bytes used to hold data to write to OLED
 */
-static uint8_t buffer[WIDTH * HEIGHT / 8]; // divide by 8 b/c accounting for byte per pixel
+static uint8_t buffer[BYTES]; // divide by 8 b/c accounting for byte per pixel
 
 /*
 * Assist with writing to specific pages in OLED buffer
@@ -205,11 +205,14 @@ void update_sh1106()
             * buffer[256], that's 128 bytes for page 1...
             */
 
-            // [TODO] send the individual paged_buffer_t instead of buffer?
-            send_data_sh1106(&oled.buffer[page * WIDTH + i]);
+            send_data_sh1106(&pg_buf.pages[page].page[i]);
+            //send_data_sh1106(&oled.buffer[page * WIDTH + i]);
 
-            // [TODO] clear the dirty info
         }
+        // [TODO] clear the dirty info
+        pg_buf.pages[page].dirtied = 0;
+        pg_buf.pages[page].dirty_start_col = UINT8_MAX;
+        pg_buf.pages[page].dirty_end_col = 0;
     }
 }
 
