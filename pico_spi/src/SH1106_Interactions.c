@@ -187,13 +187,15 @@ void update_sh1106()
         while(1);
     }
 
-    // [TODO] Implement dirty page lookup here?
-
-    // update each page
     for(uint8_t page = 0; page < 8; page++)
     {
+        if(!pg_buf.pages[page].dirtied)
+        {
+            continue;
+        }
+
         send_command_sh1106(SH1106_PAGE_OFFSET(page));
-        set_column_address(0);
+        set_column_address(0); //[TODO] Possibly refine this so it starts at dirty col start?
 
         // write each byte in that page to OLED
         for(uint8_t i = 0; i < WIDTH; i++)
@@ -205,11 +207,9 @@ void update_sh1106()
             * buffer[256], that's 128 bytes for page 1...
             */
 
-            send_data_sh1106(&pg_buf.pages[page].page[i]);
-            //send_data_sh1106(&oled.buffer[page * WIDTH + i]);
+            send_data_sh1106(&pg_buf.pages[page].page[i]); //[TODO] Possibly refine so that the number of bytes to modify is known exactly between the diryt_start and dirty_end columns?
 
         }
-        // [TODO] clear the dirty info
         pg_buf.pages[page].dirtied = 0;
         pg_buf.pages[page].dirty_start_col = UINT8_MAX;
         pg_buf.pages[page].dirty_end_col = 0;
@@ -238,7 +238,6 @@ void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size)
     if(data == NULL || pg < 1 || pg > 8 || size > 1024 || offset > 16)
     { return; }
 
-    // [TODO] Implement dirty page update here?
     update_dirty_page(pg, offset);
     memcpy(pg_buf.pages[pg - 1].page + (offset * 8), data, size);
 }
@@ -309,6 +308,9 @@ void update_dirty_page(size_t pg, size_t offset)
 
 void clear_buffer()
 {
+    // [TODO] Don't want to do this...should clean up later on...
+    pg_buf.pages[0].dirtied = 1;
+    pg_buf.pages[1].dirtied = 1;
     memset(buffer, 0x00, BYTES);
 }
 

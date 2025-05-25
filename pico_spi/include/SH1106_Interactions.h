@@ -219,15 +219,23 @@ void write_to_page(const uint8_t* data, size_t pg, size_t offset, size_t size);
 /*
 * @brief Write to specific page in buffer 
 *
-* @param val,.
-* @param pg_start,
-* @param pos_start,
+* @param val, data to write
+* @param pg_start, page to start write in
+* @param pos_start, 
 * @param total_size, number of bytes to copy, must be < 128 (page size).
 *
 * @return void
 */
 void write_string(const unsigned char* val, size_t pg_start, size_t pos_start, size_t total_size);
 
+/*
+* @brief Update the dirty info for page 
+*
+* @param pg, page where update occurs 
+* @param offset, location of where the writing is occurring 
+*
+* @return void
+*/
 void update_dirty_page(size_t pg, size_t offset);
 
 void clear_buffer();
