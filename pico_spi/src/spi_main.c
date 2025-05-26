@@ -49,15 +49,14 @@ int main()
      
     // set buffer to all 0xFF (write white to screen)
     set_buffer();
-    update_sh1106();
 
     // set buffer to all 0x00 (write black to screen)
     clear_buffer();
-    update_sh1106();
 
-//    testCase1();
-    testCase2();
-    testCase3();
+    while(1)
+    testCase1();
+//    testCase2();
+//    testCase3();
 
 dbg();
     return 0;

@@ -109,18 +109,14 @@ void configure_SH1106()
     // bring SH1106 out of Reset
     reset_sh1106();
 
-    printf("DEBUG: Sending over %d bytes of data via SPI\n",
-        sizeof(init_config_steps)/sizeof(uint8_t));
     sleep_ms(3000);
     // send data over from array
     for(int i = 0; i < sizeof(init_config_steps)/sizeof(uint8_t); i++)
     {
-        printf("DEBUG: Sending over %X\n", init_config_steps[i]);
         send_command_sh1106(init_config_steps[i]);
     }
 
     // send over SET_DISPLAY_ON & delay
-    printf("DEBUG: Sending over %X\n", SH1106_DISPLAYON);
     send_command_sh1106(SH1106_DISPLAYON);
     sleep_ms(500);
 }
@@ -129,7 +125,6 @@ void begin_sh1106()
 {
     // initialize the SPI pins on pico2
     initialize_spi();
-    printf("SPI Initialized\n");
 
     // execute the Vdd/Vcc off state -> initial settings configuration steps
     configure_SH1106();   
@@ -308,15 +303,32 @@ void update_dirty_page(size_t pg, size_t offset)
 
 void clear_buffer()
 {
-    // [TODO] Don't want to do this...should clean up later on...
-    pg_buf.pages[0].dirtied = 1;
-    pg_buf.pages[1].dirtied = 1;
     memset(buffer, 0x00, BYTES);
+    for(int i = 0; i < 8; ++i)
+    {
+        send_command_sh1106(SH1106_PAGE_OFFSET(i));
+        set_column_address(0); 
+        gpio_put(oled.dc, 1); // Cmd mode
+        gpio_put(oled.cs, 0);
+        sleep_ms(10);
+        spi_write_blocking(SPI_PORT, buffer, BYTES/8);
+        gpio_put(oled.cs, 1);
+    }
 }
 
 void set_buffer()
 {
     memset(buffer, 0xFF, BYTES);
+    for(int i = 0; i < 8; ++i)
+    {
+        send_command_sh1106(SH1106_PAGE_OFFSET(i));
+        set_column_address(0); 
+        gpio_put(oled.dc, 1); // Cmd mode
+        gpio_put(oled.cs, 0);
+        sleep_ms(10);
+        spi_write_blocking(SPI_PORT, buffer, BYTES/8);
+        gpio_put(oled.cs, 1);
+    }
 }
 
 void insert_char(unsigned char val)
