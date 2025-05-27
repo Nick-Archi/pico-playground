@@ -3,6 +3,7 @@
 **/CMakeFiles/
 **/CMakeCache.txt
 **/CMakeScripts/
+**/debug/
 **/FreeRTOS/
 **/pico-sdk/
 **/picotool/
