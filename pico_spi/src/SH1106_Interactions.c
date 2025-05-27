@@ -331,11 +331,11 @@ void set_buffer()
     }
 }
 
-void insert_char(unsigned char val)
+void insert_char(unsigned char val, size_t page)
 {
     const uint8_t* addr = char_to_bitmap(val);
     if(addr == NULL)
     return;
 
-    write_to_page(addr, 3, 0, 8);
+    write_to_page(addr, page, 0, 8);
 }

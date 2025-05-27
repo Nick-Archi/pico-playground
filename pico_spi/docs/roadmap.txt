@@ -32,6 +32,7 @@ bitmap
         -- using the DS, function to write to OLED will be able to:
             [ x ] update specific "dirty" portions of OLED, leaving other areas untouched
             [ ] set the column addr appropriately
+                [ ]  test the setting a string, and then changing a char in the string will have fast updates?
         -- built so far:
             [ x ] dirty DS:
                 -- implement for each page, ditry start_col and end_col
@@ -46,4 +47,4 @@ bitmap
         -- when offset/idx gets to 17, it doesn't write the remainder to the OLED
         -- pos_start is also buggy. What happens if I wanted to start writing at position 26 in the buffer?
         
-[ ] Functionality to convert decimal number to string? itoa implementation if it doesn't exist in pico_sdk ?
+[ x ] Functionality to convert decimal number to string? itoa implementation if it doesn't exist in pico_sdk ?

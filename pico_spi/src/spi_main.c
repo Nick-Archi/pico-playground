@@ -8,6 +8,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "pico/stdlib.h"
@@ -29,6 +30,7 @@ static void set_screen();
 static void testCase1();
 static void testCase2();
 static void testCase3();
+static void testCase4();
 
 int main()
 {
@@ -54,9 +56,12 @@ int main()
     clear_buffer();
 
     while(1)
-    testCase1();
-//    testCase2();
-//    testCase3();
+    {
+//        testCase1();
+//        testCase2();
+        testCase3();
+//        testCase4();
+    }
 
 dbg();
     return 0;
@@ -76,17 +81,17 @@ void static testCase1()
 
         for(int i = 0; i < sizeof(lowercase); ++i)
         {
-            insert_char(lowercase[i]);
+            insert_char(lowercase[i], 3);
             update_sh1106();
         }
         for(int i = 0; i < sizeof(uppercase); ++i)
         {
-            insert_char(uppercase[i]);
+            insert_char(uppercase[i], 4);
             update_sh1106();
         }
         for(int i = 0; i < sizeof(digits); ++i)
         {
-            insert_char(digits[i]);
+            insert_char(digits[i], 5);
             update_sh1106();
         }
  
@@ -108,4 +113,20 @@ static void testCase3()
     write_string("abcdefghijklmnop", 7, 0, (8*16));
     write_string("qrstuvwxyz", 8, 0, (8*10));
     update_sh1106();
+}
+
+/*
+* Test writing integer value incrementing up into different decimal places
+*/ 
+static void testCase4()
+{
+    int i = 0;
+    int val = 0;
+    char buffer[] = {1,1,1,1,0};
+    while(1)
+    {
+        itoa(val++,buffer,10);
+        write_string(buffer, 4, 0, sizeof(buffer) * 8);
+        update_sh1106();
+    }
 }

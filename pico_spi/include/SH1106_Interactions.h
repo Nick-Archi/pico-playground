@@ -242,6 +242,6 @@ void clear_buffer();
 
 void set_buffer();
 
-void insert_char(unsigned char val);
+void insert_char(unsigned char val, size_t page);
 
 #endif // _SH1106_INTERACTIONS_H_
