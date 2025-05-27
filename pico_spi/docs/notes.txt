@@ -20,6 +20,7 @@ Offical Adafruit SH1106 Link: https://github.com/adafruit/Adafruit_SH110x/blob/m
 Adafruit SH1106 Link: https://github.com/wonho-maker/Adafruit_SH1106/tree/master/
 Official Adafruit-GFX-Lib: https://github.com/adafruit/Adafruit-GFX-Library/blob/master/
 Creating BitMaps: https://learn.adafruit.com/monochrome-oled-breakouts/arduino-library-and-examples
+Info On SH1106: http://www.technoblogy.com/show?3XEI
 
 Analyzing the SH1106 PDF:
 [] I don't think that I have to worry about how the SH1106 is connected internally, since I bought this OLED I can skip this analysis for the most part
@@ -44,28 +45,138 @@ Analyzing the SH1106 PDF:
 [] Display Data RAM
 	- This is a bit mapped static RAM holding the bit pattern that will be displayed
 	- size of RAM is 132 * 64 bits
+	- written to when AO = 1, I believe SL (serial line) is shifted into the display RAM
+	
+	** http://www.technoblogy.com/show?3XEI has a nice figure for explaining the display
 
 ** For the next 3 []'s it'll be easier to have the Fig8 open on the side for analysis...
 
 [] The Page Address Circuit
 	- Page Address Set Command will modify the page address for the display data RAM
-	- specifiying it again will set the page address will change it
+	- specifiying it again changes the page address
 	
 [] The Column Address
 	** Peep the bottom of Fig8! And pay attention to ADC portion and how DC=1, or DC=0
 	- Display data RAM column address is specified by the column address set command
 	- it is incremented by +1 upon each display data read/write command
 	- column address is independent of page address
-		- make sure to respecifiy it when changing pages?
+		- make sure to re-specifiy it when changing pages
 	- Column remapping ADC command can reverse the display data RAM column address & segment output
 		
 [] The Line Address Circuit
 	- I am kind of confused on this...
 	- I think it's explaining how the data is fed from D0-D7 into each page that will essentially be displayed on the OLED
 	** revisit this again some time...
+	- Something about how a COMX port is driving a corresponding line address?
+	-- Had to use ChatGPT because the sentence regarding dynamically changing line addresses was weird
+	    ChatGPT Response: You're right—this sentence is a bit of a mess. Here's a clearer version in plain English:
+
+    "If you change the line addresses dynamically using the 'display start line address' command, you can achieve effects like screen scrolling or page swapping. This works because it changes how the display data RAM maps to what appears on the screen. For example, if the initial display line is set to 1DH (hex), that affects which part of memory is shown at the top of the screen."
+    -- I guess dynamically changing the line address will change what is displayed on the screen
+        -- the start of the display RAM data?
 	
 [] Reset Circuit
 	- explains what happens when RES input set to Low (0)
 	- seems to reset the OLED...
+	- SEG0 mapped to column address 00H
+	- COM0 mapped to row address 00H
+	- Shift register content cleared
+	- Display start line set to RAM line address 00H
+	- Column Address counter => 0
+	- Contrast control register set to 80H
+	- Internal DC-DC selected
 	
+[] Commands
+    - SH1106 uses combination of A0 signals to identify data bus signals
+    - command executed following timing clock, regardless of external clock signal
+    
+[] Command Set
 
+    [] Set Lower & Higher Column Address
+        - A0 => 0
+        2. Higher Column Addressing:
+        - D7-D4 => 1
+        - D3 - D0 => 0x<0-F>, Hexadecimal value
+            - this sets A7-A4 correspondingly
+        
+        1. Lower Column Addresssing:
+        - D7-D4 => 0
+        - D3-D0 => 0x<0-F>, Hexadecimal value
+            - sets A3-A0 correspondingly (D3 => A3, D2 => A2, etc)
+            
+     [] 3. Set Pump Voltage Value: (30H-33H)
+        - specifies out voltage for charge pump circuit
+        - [TODO] Not really needing to be understood right now...
+        
+     [] 4. Set Display Start Line: (40H - 7FH)
+        - specifies the line address that determines the initial display line
+        - this line from RAM display data will become the top of OLED screen
+        - A0 => 0
+        - D7 => 0
+        - D6 => 1
+        - D5-D0 => <whatever 6 bit value you choose between 0 - 63>
+        
+     [] 5. Set Contrast Control Register
+        - Sets the contrast for the OLED
+        - [TODO] Skipping for now
+        
+     [] 6. Set Segment Re-map: (A0H-A1H)
+        - reverses the relationship b/w RAM column address and segement driver
+        - [SKIP]
+        
+     [] 7. Set Entire Display OFF/ON: (A4H - A5H)
+        - turns the entie display on or off
+        - A0 => 0
+        - D7-D4 => 0xA
+        - D3-D0 => either 0x4 (OFF) or 0x5 (ON)
+        
+     [] 8. Set Normal/Reverse Display: (A6H - A7H)
+        - reverses display ON/OFF status?
+        - [SKIP]
+        
+     [] 9. Set Multiple Ration: (Double Bytes Command)
+        - [SKIP]
+        
+     [] 10. Set DC-DC OFF/ON: (Double Bytes Command)
+        - Controls the DC-DC voltage converter
+        - Display must be OFF
+        - I guess "Double Bytes Command" means that it will write 2 bytes to the driver?
+        - 1st Byte, DC-DC control mode set: (ADH)
+            - A0 => 0
+            - D7-D0 => 0xA
+        - 2nd Byte, DC-DC ON/OFF mode set: (8AH-8BH)
+            - A0 => 0
+            - D7-D4 => 0x8
+            - D3-D0 => either 0xA or 0xB
+	
+	[] 11. Display OFF/ON: (AEH-AFH)
+	    - alternative way to turn display OFF/ON
+	    - [SKIP]
+	    
+	[] 12. Set Page Address: (B0H-B7H)
+	    - picks the page address to load display RAM data to page address register
+	    ** Needed in order to change pages on the OLED?
+	    - A0 => 0
+	    - D7-D4 => 0xB
+	    - D3-D0 => <hex value between (inclusive) 0x0 - 0x7>
+	    
+	[] 13. Set Common Output Scan Direction: (C0H-C8H)
+	    - [SKIP]
+	    
+	** Getting tired around command 14....
+	
+	[] 14. Set Display Offset
+	
+	
+	[] 22. Write Display Data
+	    - Write 8 bit data in display RAM
+	    - Column address incremented by 1 each write
+	    - A0 => 1
+	    - D7-D0 => RAM Data <full 8 bit value from 0x00 - 0xFF>
+	    
+	[] 24. Read Display Data
+	    - Read 8 bit data from Display RAM area
+	    - specifiy column address and page address
+	    - [DONT CARE. CAN'T READ DURING SERIAL INTERACTION]
+
+[] Page 32, Power On and Initialization

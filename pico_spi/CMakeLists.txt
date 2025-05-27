@@ -17,7 +17,8 @@ pico_sdk_init()
 # rest of proj
 
 add_executable(${EXEC1_NAME} 
-    ${SOURCE_DIR}Adafruit_SH1106.c
+    ${SOURCE_DIR}spi_main.c
+    ${SOURCE_DIR}SH1106_Interactions.c
 )
 
 target_include_directories(${EXEC1_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

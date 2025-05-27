@@ -1,0 +1,50 @@
+Lame_Bitmap Roadmap
+
+Realized I needed to try and build a roadmap for what functionality I intend to bring with
+this development of the lame_bitmap
+
+Functionality:
+[ x ] Convert a char into it's corresponding digit or letter
+[ x ] Write strings to specific pages to display on OLED
+[ x ] Write full on sentences to the OLED?
+
+Objectives:
+[ x ] Converting char -> corresponding digit/letter:
+    -- modifying source files:
+[ x ] Create string to bitmap functionality
+    -- ex) "hello" -> "HELLO" on OLED
+        -- start with 1st char
+        -- obtain the bitmap location for it
+        -- write the bitmap into the location in buffer
+        -- increment to next char and increment next spot in buffer
+        -- repeat
+
+[ x ] Work on a script to autogenerate a bitmap header file from a text file containing a valid
+bitmap
+        
+[ x ] Work on writing a page at a time instead of cycling through all pages...     
+    -- likely review the Command Table in SH1106 Sino Wealth Document
+        -- "Set Column Address"?, "Set Page Address"?
+    -- likely modify these functions:
+        -- set_column_address
+        
+    -- possibly implement a dirty page data structure that will keep track of the pages modified
+        -- using the DS, function to write to OLED will be able to:
+            [ x ] update specific "dirty" portions of OLED, leaving other areas untouched
+            [ ] set the column addr appropriately
+                [ ]  test the setting a string, and then changing a char in the string will have fast updates?
+        -- built so far:
+            [ x ] dirty DS:
+                -- implement for each page, ditry start_col and end_col
+                    -- pos_start in write_string will give me clues on how to update the dirty DS
+        -- Tinkering with write to page
+            -- I've messed around with the write_string() and modified where in the buffer the write is occuring with modifying the offset value
+           
+    
+[ ] Possibly work on functionality to write more than (16 * 8) bytes to the page. This will cause the page offset to increase to the next page and for the offset to reset
+    -- some type of modulus functionality?
+    -- start looking at the write_string() in SH1106_Interactions.c
+        -- when offset/idx gets to 17, it doesn't write the remainder to the OLED
+        -- pos_start is also buggy. What happens if I wanted to start writing at position 26 in the buffer?
+        
+[ x ] Functionality to convert decimal number to string? itoa implementation if it doesn't exist in pico_sdk ?
