@@ -9,7 +9,7 @@
 #include "SH1106_Commands.h"
 #include "lame_bitmap.h"
 #include "char_bitmap.h"
-#include "digi_bitmap.h"
+#include "digi_bitmap_2.h"
 
 extern SH1106 oled;
 
@@ -257,7 +257,7 @@ static const uint8_t* char_to_bitmap(unsigned char val)
     if(val >= '0' && val <= '9')
     {
         val -= 48;
-        addr = &digi_bitmap[val][0];
+        addr = &digi_bitmap_2[val][0];
     }
     
     if(val >= 'A' && val <= 'z') 
