@@ -18,15 +18,21 @@ pico_sdk_init()
 
 add_executable(${EXEC1_NAME} 
     ${SOURCE_DIR}spi_main.c
-    ${SOURCE_DIR}SH1106_Interactions.c
+    #${SOURCE_DIR}SH1106_Interactions.c
 )
 
+# add include files to target
+target_include_directories(${EXEC1_NAME} PUBLIC /usr/local/include/sbm)
 target_include_directories(${EXEC1_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# add directories to find libraries from
+target_link_directories(${EXEC1_NAME} PUBLIC /usr/local/lib)
 
 # add pico_stdlib library which aggregates commonly used features
 target_link_libraries(${EXEC1_NAME} 
     pico_stdlib 
     hardware_spi
+    sbm
 )
 
 # tell compiler to use the USB output and disable UART output
